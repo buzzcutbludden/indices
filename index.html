@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PowerUp — Laws of Indices</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* light surfaces */
+    --bg:#ECEFF4; --surface:#FFFFFF; --surface-2:#F4F6FA;
+    --ink:#14161D; --muted:#586074; --faint:#8A93A6; --line:#E2E7EF;
+    /* accent (set by JS) */
+    --accent:#5B34E0; --accent-d:#4724B8;
+    /* status */
+    --correct:#0F9A6A; --wrong:#D8472C; --amber:#D9870A;
+    /* derived (auto-adapt to theme + accent) */
+    --accent-soft:color-mix(in srgb, var(--accent) 13%, var(--surface));
+    --accent-line:color-mix(in srgb, var(--accent) 30%, var(--line));
+    --correct-soft:color-mix(in srgb, var(--correct) 14%, var(--surface));
+    --wrong-soft:color-mix(in srgb, var(--wrong) 14%, var(--surface));
+    --amber-soft:color-mix(in srgb, var(--amber) 16%, var(--surface));
+    --shadow:0 1px 2px rgba(20,24,40,.05), 0 10px 26px rgba(20,24,40,.07);
+    --shadow-lg:0 2px 6px rgba(20,24,40,.07), 0 28px 64px rgba(20,24,40,.13);
+    --r:18px;
+  }
+  [data-theme="dark"]{
+    --bg:#0D0F15; --surface:#171A22; --surface-2:#1E222C;
+    --ink:#EBEEF5; --muted:#9BA4B6; --faint:#697086; --line:#2A2F3B;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 30px rgba(0,0,0,.45);
+    --shadow-lg:0 2px 10px rgba(0,0,0,.45), 0 34px 74px rgba(0,0,0,.6);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{background:radial-gradient(120% 80% at 50% -10%, color-mix(in srgb,var(--accent) 8%,var(--bg)), var(--bg) 60%);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh;transition:background .4s,color .25s}
+  sup{font-size:.66em;line-height:0;vertical-align:.55em}
+  sub{font-size:.66em;line-height:0}
+  .mono{font-family:"IBM Plex Mono",monospace}
+  .wrap{max-width:1000px;margin:0 auto;padding:22px 20px 100px}
+
+  /* ---------- header ---------- */
+  header.top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:24px}
+  .brand{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .logo{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:1.55rem;letter-spacing:-.025em;line-height:1}
+  .logo .pw sup{color:var(--accent);font-weight:700}
+  .greet{color:var(--faint);font-size:.82rem;letter-spacing:.01em}
+  .greet b{color:var(--muted);font-weight:600}
+  .head-right{display:flex;align-items:center;gap:10px}
+  .chip{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;box-shadow:var(--shadow)}
+  .streak-chip{padding:9px 15px;font-weight:600;font-size:.88rem;color:var(--ink)}
+  .streak-chip .fl{filter:saturate(1.1)}
+  .streak-chip .n{font-family:"Space Grotesk";color:var(--amber)}
+  .level-chip{padding:7px 7px 7px 16px;gap:13px}
+  .level-chip .lv-label{font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
+  .level-chip .lv-name{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:.92rem;line-height:1.1}
+  .ring{position:relative;width:42px;height:42px}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:"IBM Plex Mono";font-weight:600;font-size:.72rem}
+  .icon-btn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.18s}
+  .icon-btn:hover{color:var(--accent);border-color:var(--accent-line);transform:translateY(-1px)}
+
+  /* ---------- tabs ---------- */
+  nav.tabs{display:flex;gap:5px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:5px;margin-bottom:26px;box-shadow:var(--shadow);width:fit-content}
+  nav.tabs button{font-family:"IBM Plex Sans";font-weight:600;font-size:.9rem;color:var(--muted);background:transparent;border:none;border-radius:10px;padding:9px 20px;cursor:pointer;transition:.18s}
+  nav.tabs button:hover{color:var(--ink)}
+  nav.tabs button.active{background:linear-gradient(180deg,var(--accent),var(--accent-d));color:#fff;box-shadow:0 4px 12px var(--accent-line)}
+
+  .view{display:none;animation:fade .35s ease}
+  .view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* ---------- start / hero ---------- */
+  .start{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow-lg);padding:34px 30px;text-align:center;overflow:hidden;position:relative}
+  .hero-motif{display:flex;align-items:flex-end;justify-content:center;gap:14px;height:108px;margin-bottom:22px}
+  .tower{display:flex;flex-direction:column;align-items:center;gap:7px}
+  .tower i{width:30px;background:linear-gradient(180deg,var(--accent),var(--accent-d));border-radius:7px 7px 4px 4px;height:var(--h);box-shadow:0 6px 16px var(--accent-line);transform-origin:bottom;animation:rise .7s cubic-bezier(.2,.9,.2,1) both}
+  .tower:nth-child(1) i{animation-delay:.05s}.tower:nth-child(2) i{animation-delay:.16s}
+  .tower:nth-child(3) i{animation-delay:.27s}.tower:nth-child(4) i{animation-delay:.38s}
+  .tower .cap{font-family:"IBM Plex Mono";font-weight:600;font-size:.92rem;color:var(--muted)}
+  @keyframes rise{from{transform:scaleY(0);opacity:0}to{transform:scaleY(1);opacity:1}}
+  .start h2{font-family:"Space Grotesk";font-weight:700;font-size:1.6rem;letter-spacing:-.015em;margin-bottom:8px}
+  .start p{color:var(--muted);max-width:52ch;margin:0 auto 22px}
+  .name-field{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;max-width:420px;margin:0 auto}
+  .name-field input{flex:1;min-width:180px;font-family:"IBM Plex Sans";font-size:1rem;padding:12px 16px;border:2px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--ink);outline:none;transition:.16s}
+  .name-field input:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 4px var(--accent-soft)}
+
+  /* ---------- daily goal ---------- */
+  .daily{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:16px;box-shadow:var(--shadow)}
+  .daily .dg-text{font-size:.84rem;color:var(--muted);white-space:nowrap}
+  .daily .dg-text b{color:var(--ink);font-family:"Space Grotesk"}
+  .daily .dg-bar{flex:1;height:8px;border-radius:6px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
+  .daily .dg-bar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--accent-d));transition:width .6s cubic-bezier(.2,.8,.2,1)}
+  .daily.done{border-color:var(--correct);background:var(--correct-soft)}
+  .daily.done .dg-bar i{background:linear-gradient(90deg,var(--correct),#0b7d56)}
+
+  /* ---------- practice ---------- */
+  .focus-line{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+  .focus-line .why{font-size:.85rem;color:var(--muted)}
+  .focus-line .why b{color:var(--ink);font-weight:600}
+  .tag{font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:3px 9px;border-radius:999px}
+  .tag.weak{background:var(--wrong-soft);color:var(--wrong)}
+  .tag.new{background:var(--accent-soft);color:var(--accent)}
+  .tag.review,.tag.redo{background:var(--amber-soft);color:var(--amber)}
+  .tag.strong{background:var(--correct-soft);color:var(--correct)}
+
+  .qcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow-lg);padding:8px 28px 30px;position:relative;overflow:hidden}
+  .qcard::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--accent),var(--accent-d))}
+  .qcard .qmeta{display:flex;justify-content:space-between;align-items:center;margin:18px 0 8px}
+  .qcard .law-name{font-family:"Space Grotesk";font-weight:600;font-size:.92rem;color:var(--accent)}
+  .qcard .diff{display:flex;gap:4px;align-items:center}
+  .qcard .diff .dot{width:7px;height:7px;border-radius:50%;background:var(--line)}
+  .qcard .diff .dot.on{background:var(--accent)}
+  .qcard .diff span{font-size:.7rem;color:var(--faint);margin-right:4px;text-transform:uppercase;letter-spacing:.08em}
+
+  .ask{font-size:.95rem;color:var(--muted);margin-bottom:16px}
+  .expr{font-family:"IBM Plex Mono";font-weight:600;font-size:clamp(1.8rem,6.5vw,3rem);line-height:1.3;letter-spacing:-.01em;color:var(--ink);margin:8px 0 26px;text-align:center}
+  .expr .op{color:var(--accent);margin:0 .18em}
+  .frac{display:inline-flex;flex-direction:column;text-align:center;vertical-align:middle;margin:0 .05em}
+  .frac .num{border-bottom:.09em solid currentColor;padding:0 .25em .04em}
+  .frac .den{padding:.04em .25em 0}
+
+  .answer-row{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap;justify-content:center}
+  .answer-row input{font-family:"IBM Plex Mono";font-weight:600;font-size:1.4rem;text-align:center;width:200px;max-width:56vw;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--ink);outline:none;transition:border-color .16s,box-shadow .16s,background .16s}
+  .answer-row input:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 4px var(--accent-soft)}
+  .answer-row input.ok{border-color:var(--correct);background:var(--correct-soft)}
+  .answer-row input.no{border-color:var(--wrong);background:var(--wrong-soft);animation:shake .35s}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+
+  .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:288px;margin:14px auto 0}
+  .pad button{font-family:"IBM Plex Mono";font-weight:600;font-size:1.18rem;background:var(--surface-2);border:1px solid var(--line);color:var(--ink);height:50px;border-radius:12px;cursor:pointer;transition:.12s}
+  .pad button:hover{border-color:var(--accent-line);color:var(--accent)}
+  .pad button:active{transform:translateY(1px)}
+  .pad button.op{color:var(--accent)}
+  .pad button.wide{grid-column:1 / -1;font-size:.95rem;font-family:"IBM Plex Sans";color:var(--muted)}
+  .pad button:disabled{opacity:.4;cursor:default;transform:none}
+  .action-row{display:flex;gap:10px;justify-content:center;align-items:center;margin-top:16px;flex-wrap:wrap}
+  .action-row .btn-primary{min-width:180px}
+  .learn-link{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:.86rem;color:var(--accent);background:transparent;border:none;cursor:pointer;font-weight:600;font-family:"IBM Plex Sans"}
+  .learn-link:hover{text-decoration:underline}
+  .how{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+  .how div{display:flex;align-items:center;gap:7px;font-size:.8rem;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:7px 14px}
+  .how b{color:var(--ink);font-weight:600}
+  .how .num{font-family:"Space Grotesk";color:var(--accent);font-weight:700}
+
+  .btn{font-family:"IBM Plex Sans";font-weight:600;font-size:1rem;border:none;border-radius:12px;cursor:pointer;transition:.16s;padding:12px 22px}
+  .btn-primary{background:linear-gradient(180deg,var(--accent),var(--accent-d));color:#fff;box-shadow:0 4px 14px var(--accent-line)}
+  .btn-primary:hover{filter:brightness(1.06);transform:translateY(-1px)}
+  .btn-primary:active{transform:translateY(0)}
+  .btn-primary:disabled{opacity:.5;cursor:default;transform:none;filter:none}
+  .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--line);padding:10px 16px;font-size:.86rem}
+  .btn-ghost:hover{color:var(--ink);border-color:var(--faint)}
+  .btn-ghost:disabled{opacity:.45;cursor:default}
+
+  .input-hint{text-align:center;font-size:.76rem;color:var(--faint);margin-top:10px;min-height:1.1em}
+
+  .feedback{margin-top:22px;border-radius:14px;padding:18px 20px;display:none}
+  .feedback.show{display:block;animation:fade .3s}
+  .feedback.right{background:var(--correct-soft);border:1px solid color-mix(in srgb,var(--correct) 35%,var(--surface))}
+  .feedback.wrong{background:var(--wrong-soft);border:1px solid color-mix(in srgb,var(--wrong) 35%,var(--surface))}
+  .feedback.info{background:var(--accent-soft);border:1px solid var(--accent-line)}
+  .feedback.info .fb-head{color:var(--accent)}
+  .feedback .fb-head{display:flex;align-items:center;gap:8px;font-weight:600;margin-bottom:6px}
+  .feedback.right .fb-head{color:var(--correct)}
+  .feedback.wrong .fb-head{color:var(--wrong)}
+  .feedback.info{background:var(--accent-soft);border:1px solid var(--accent-line)}
+  .feedback.info .fb-head{color:var(--accent)}
+  .feedback .fb-ans{font-family:"IBM Plex Mono";font-weight:600;color:var(--ink)}
+  .fb-diag{margin-top:8px;font-size:.9rem;background:color-mix(in srgb,var(--surface) 70%,transparent);border-radius:10px;padding:9px 12px;color:var(--ink)}
+  .fb-diag b{color:var(--wrong)}
+  .steps{margin-top:12px;border-top:1px dashed color-mix(in srgb,var(--ink) 18%,transparent);padding-top:12px;display:none}
+  .steps.show{display:block}
+  .steps h4{font-size:.72rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:8px}
+  .steps ol{list-style:none;counter-reset:s}
+  .steps li{counter-increment:s;position:relative;padding:5px 0 5px 30px;font-size:.92rem;color:var(--ink)}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:5px;width:20px;height:20px;background:var(--surface);border:1px solid var(--line);border-radius:50%;font-family:"IBM Plex Mono";font-size:.66rem;font-weight:600;display:flex;align-items:center;justify-content:center;color:var(--accent)}
+  .steps li .mono{color:var(--accent)}
+  .next-row{display:flex;justify-content:center;margin-top:18px}
+
+  .statstrip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 14px;text-align:center;box-shadow:var(--shadow)}
+  .stat .v{font-family:"Space Grotesk";font-weight:600;font-size:1.5rem;line-height:1}
+  .stat .k{font-size:.7rem;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+  .stat .v.flame{color:var(--amber)}
+
+  /* ---------- progress ---------- */
+  .section-h{font-family:"Space Grotesk";font-weight:600;font-size:1.18rem;margin:4px 0 4px}
+  .section-sub{color:var(--muted);font-size:.9rem;margin-bottom:18px}
+  .map{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .mcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);position:relative;transition:box-shadow .18s,border-color .18s,transform .18s}
+  .mcard:hover{transform:translateY(-2px)}
+  .mcard.focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft),var(--shadow)}
+  .mcard.locked{opacity:.7}
+  .mcard .mtop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px}
+  .mcard .mname{font-family:"Space Grotesk";font-weight:600;font-size:.96rem}
+  .mcard .mrule{font-family:"IBM Plex Mono";font-size:.82rem;color:var(--muted);margin-bottom:12px}
+  .bar{height:9px;border-radius:6px;background:var(--surface-2);overflow:hidden;border:1px solid var(--line)}
+  .bar i{display:block;height:100%;border-radius:6px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+  .mfoot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:.76rem;color:var(--faint)}
+  .mfoot .pct{font-family:"IBM Plex Mono";font-weight:600;color:var(--ink);font-size:.84rem}
+  .diffpips{display:flex;gap:3px;align-items:center}
+  .diffpips i{width:6px;height:6px;border-radius:50%;background:var(--line)}
+  .diffpips i.on{background:var(--accent)}
+  .practice-this{margin-top:12px;width:100%}
+
+  /* ---------- learn ---------- */
+  .acc{display:flex;flex-direction:column;gap:10px}
+  .law{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+  .law summary{list-style:none;cursor:pointer;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .law summary::-webkit-details-marker{display:none}
+  .law summary .ls-left{display:flex;align-items:center;gap:14px;min-width:0}
+  .law .lnum{font-family:"IBM Plex Mono";font-weight:600;color:var(--accent);font-size:.8rem;background:var(--accent-soft);border-radius:8px;padding:6px 9px}
+  .law .ltitle{font-family:"Space Grotesk";font-weight:600;font-size:1rem}
+  .law .lrule{font-family:"IBM Plex Mono";font-weight:600;color:var(--ink);font-size:1.05rem;white-space:nowrap}
+  .law .chev{color:var(--faint);transition:.2s;flex-shrink:0}
+  .law[open] .chev{transform:rotate(180deg)}
+  .law .lbody{padding:0 18px 18px;border-top:1px solid var(--line)}
+  .law .lbody p{color:var(--muted);font-size:.92rem;margin:14px 0 10px}
+  .law .lbody .ex{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-family:"IBM Plex Mono";font-size:.95rem}
+  .law .lbody .ex .lbl{font-family:"IBM Plex Sans";font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);margin-bottom:6px}
+  .law .lbody .ex .step{padding:2px 0;color:var(--ink)}
+  .law .lbody .ex .step .op{color:var(--accent)}
+  .law .lbody .miniprac{margin-top:14px}
+
+  footer{text-align:center;color:var(--faint);font-size:.78rem;margin-top:30px}
+
+  /* ---------- toast ---------- */
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);border-radius:14px;padding:14px 20px;box-shadow:var(--shadow-lg);font-size:.9rem;max-width:min(440px,92vw);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:60}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast b{color:var(--accent)}
+  [data-theme="dark"] .toast b{color:color-mix(in srgb,var(--accent) 55%,#fff)}
+  .toast .t-title{font-family:"Space Grotesk";font-weight:600;margin-bottom:2px}
+
+  /* ---------- settings modal ---------- */
+  .backdrop{position:fixed;inset:0;background:rgba(10,12,18,.5);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:70;padding:18px}
+  .backdrop.open{display:flex;animation:fade .25s}
+  .modal{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow-lg);width:min(460px,100%);max-height:90vh;overflow:auto;padding:24px}
+  .modal h3{font-family:"Space Grotesk";font-weight:700;font-size:1.2rem;margin-bottom:2px}
+  .modal .msub{color:var(--faint);font-size:.82rem;margin-bottom:18px}
+  .field{margin-bottom:18px}
+  .field>label{display:block;font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:9px}
+  .field input[type=text]{width:100%;font-family:"IBM Plex Sans";font-size:1rem;padding:11px 14px;border:2px solid var(--line);border-radius:11px;background:var(--surface-2);color:var(--ink);outline:none;transition:.16s}
+  .field input[type=text]:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 4px var(--accent-soft)}
+  .seg{display:flex;gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:5px}
+  .seg button{flex:1;font-family:"IBM Plex Sans";font-weight:600;font-size:.86rem;color:var(--muted);background:transparent;border:none;border-radius:8px;padding:9px;cursor:pointer;transition:.15s}
+  .seg button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+  [data-theme="dark"] .seg button.on{background:var(--accent);color:#fff}
+  .swatches{display:flex;gap:10px}
+  .swatch{width:38px;height:38px;border-radius:50%;border:2px solid transparent;cursor:pointer;position:relative;transition:.16s;box-shadow:var(--shadow)}
+  .swatch:hover{transform:scale(1.08)}
+  .swatch.on{border-color:var(--ink)}
+  .swatch.on::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.9rem}
+  .modal-foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:10px}
+  .danger{color:var(--wrong);background:transparent;border:1px solid color-mix(in srgb,var(--wrong) 40%,var(--line));border-radius:11px;padding:10px 14px;font-weight:600;font-size:.86rem;cursor:pointer}
+  .danger:hover{background:var(--wrong-soft)}
+
+  @media (max-width:680px){
+    .statstrip{grid-template-columns:repeat(2,1fr)}
+    .map{grid-template-columns:1fr}
+    .law .lrule{display:none}
+    nav.tabs{width:100%;justify-content:space-between}
+    .greet{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="logo">Power<span class="pw">Up<sup>n</sup></span></div>
+      <div class="greet" id="greet">Master the laws of indices</div>
+    </div>
+    <div class="head-right">
+      <div class="chip streak-chip" id="streakChip" title="Day streak" style="display:none">
+        <span class="fl">🔥</span><span class="n" id="streakN">0</span>
+      </div>
+      <div class="chip level-chip">
+        <div>
+          <div class="lv-label">Level</div>
+          <div class="lv-name" id="levelName">—</div>
+        </div>
+        <div class="ring">
+          <svg width="42" height="42" viewBox="0 0 42 42">
+            <circle cx="21" cy="21" r="17" fill="none" stroke="var(--line)" stroke-width="5"/>
+            <circle id="ringFill" cx="21" cy="21" r="17" fill="none" stroke="var(--accent)" stroke-width="5"
+                    stroke-linecap="round" stroke-dasharray="106.8" stroke-dashoffset="106.8" style="transition:stroke-dashoffset .6s ease"/>
+          </svg>
+          <div class="pct" id="ringPct">0%</div>
+        </div>
+      </div>
+      <button class="icon-btn" id="settingsBtn" aria-label="Settings" title="Settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button data-view="practice" class="active">Practice</button>
+    <button data-view="progress">Progress</button>
+    <button data-view="learn">Learn</button>
+  </nav>
+
+  <!-- PRACTICE -->
+  <section class="view active" id="view-practice">
+    <div id="startScreen" class="start">
+      <div class="hero-motif" aria-hidden="true">
+        <div class="tower" style="--h:24%"><i></i><span class="cap">2<sup>1</sup></span></div>
+        <div class="tower" style="--h:44%"><i></i><span class="cap">2<sup>2</sup></span></div>
+        <div class="tower" style="--h:70%"><i></i><span class="cap">2<sup>3</sup></span></div>
+        <div class="tower" style="--h:100%"><i></i><span class="cap">2<sup>4</sup></span></div>
+      </div>
+      <h2>Small numbers, big growth</h2>
+      <p>That's the power of an index. We'll mix questions across every law, steer toward your weak
+         spots, re-test slips, and ramp up as you improve. What should I call you?</p>
+      <div class="name-field">
+        <input id="nameInput" type="text" maxlength="24" placeholder="Your name (optional)" aria-label="Your name">
+        <button class="btn btn-primary" id="beginBtn">Start</button>
+      </div>
+      <div class="how">
+        <div><span class="num">1</span> Answer at your own pace</div>
+        <div><span class="num">2</span> We spot your <b>weak areas</b></div>
+        <div><span class="num">3</span> They come back till they click</div>
+      </div>
+    </div>
+
+    <div id="practiceArea" style="display:none">
+      <div class="daily" id="dailyBox">
+        <span class="dg-text">Today <b id="dgCount">0</b> / <span id="dgGoal">20</span></span>
+        <span class="dg-bar"><i id="dgFill" style="width:0%"></i></span>
+      </div>
+
+      <div class="focus-line">
+        <span class="why">Now working on <b id="focusName">—</b></span>
+        <span class="tag" id="focusTag">new</span>
+      </div>
+
+      <div class="qcard">
+        <div class="qmeta">
+          <div class="law-name" id="qLaw">—</div>
+          <div class="diff"><span>Level</span>
+            <i class="dot" data-d="1"></i><i class="dot" data-d="2"></i><i class="dot" data-d="3"></i>
+          </div>
+        </div>
+        <div class="ask" id="qAsk">—</div>
+        <div class="expr" id="qExpr">—</div>
+
+        <div class="answer-row">
+          <input id="answer" inputmode="text" autocomplete="off" spellcheck="false" placeholder="e.g. 7" aria-label="Your answer">
+        </div>
+        <div class="pad" id="pad" aria-label="Number pad"></div>
+        <div class="input-hint" id="inputHint">Type or tap your answer</div>
+
+        <div class="action-row">
+          <button class="btn btn-ghost" id="hintBtn">Hint</button>
+          <button class="btn btn-primary" id="submitBtn">Check answer</button>
+          <button class="btn btn-ghost" id="skipBtn">Skip</button>
+        </div>
+
+        <div class="feedback" id="feedback" aria-live="polite">
+          <div class="fb-head" id="fbHead"></div>
+          <div id="fbBody"></div>
+          <div class="fb-diag" id="fbDiag" style="display:none"></div>
+          <button class="btn btn-ghost" id="stepsBtn" style="margin-top:12px">Show full solution</button>
+          <div class="steps" id="steps"><h4>Step by step</h4><ol id="stepsList"></ol></div>
+          <div><button class="learn-link" id="learnLinkBtn">📖 Read the full rule in Learn →</button></div>
+        </div>
+
+        <div class="next-row" id="nextRow" style="display:none">
+          <button class="btn btn-primary" id="nextBtn">Next question →</button>
+        </div>
+      </div>
+
+      <div class="statstrip">
+        <div class="stat"><div class="v" id="stAnswered">0</div><div class="k">Answered</div></div>
+        <div class="stat"><div class="v" id="stAccuracy">—</div><div class="k">Accuracy</div></div>
+        <div class="stat"><div class="v flame" id="stStreak">0</div><div class="k">Hot run</div></div>
+        <div class="stat"><div class="v" id="stMastery">0%</div><div class="k">Mastery</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROGRESS -->
+  <section class="view" id="view-progress">
+    <div class="section-h">Your mastery map</div>
+    <div class="section-sub">Each law has its own strength score and difficulty level. The engine sends more
+      questions from the laws lowest here. <b>Combined problems</b> unlock once your basics are solid.</div>
+    <div class="map" id="mapGrid"></div>
+  </section>
+
+  <!-- LEARN -->
+  <section class="view" id="view-learn">
+    <div class="section-h">The laws of indices</div>
+    <div class="section-sub">An <b>index</b> (plural: indices — also called a power or exponent) tells you how many
+      times to multiply a number by itself. Master these and you can simplify anything.</div>
+    <div class="acc" id="learnAcc"></div>
+  </section>
+
+  <footer id="footNote">Built for focused practice · your progress saves on this device</footer>
+</div>
+
+<!-- toast -->
+<div class="toast" id="toast"><div class="t-title" id="toastTitle"></div><div id="toastBody"></div></div>
+
+<!-- settings -->
+<div class="backdrop" id="backdrop" role="dialog" aria-modal="true" aria-label="Settings">
+  <div class="modal">
+    <h3>Settings</h3>
+    <div class="msub">Make it yours — everything saves automatically.</div>
+
+    <div class="field">
+      <label for="setName">Name</label>
+      <input type="text" id="setName" maxlength="24" placeholder="Your name">
+    </div>
+
+    <div class="field">
+      <label>Appearance</label>
+      <div class="seg" id="themeSeg">
+        <button data-theme-opt="light">☀︎ Light</button>
+        <button data-theme-opt="dark">☾ Dark</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Accent colour</label>
+      <div class="swatches" id="swatches"></div>
+    </div>
+
+    <div class="field">
+      <label>Daily goal</label>
+      <div class="seg" id="goalSeg">
+        <button data-goal="10">10</button>
+        <button data-goal="20">20</button>
+        <button data-goal="30">30</button>
+        <button data-goal="50">50</button>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="danger" id="resetBtn">Reset progress</button>
+      <button class="btn btn-primary" id="closeSettings">Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== notation helpers ===== */
+const P=(b,e)=>`${b}<sup>${e}</sup>`;
+const FR=(n,d)=>`<span class="frac"><span class="num">${n}</span><span class="den">${d}</span></span>`;
+const X=`<span class="op">×</span>`, DIV=`<span class="op">÷</span>`;
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a||1}
+function fracStr(n,d){const g=gcd(n,d);n/=g;d/=g;if(d===1)return `${n}`;return `${n}/${d}`;}
+function Q(o){o.traps=(o.traps||[]).filter(t=>Math.abs(t.v-o.answer)>1e-6);return o;}
+
+/* ===== law metadata ===== */
+const LAWS={
+  product:{name:"Product rule",rule:`${P('a','m')} ${X} ${P('a','n')} = ${P('a','m+n')}`,
+    explain:"Multiplying powers with the same base — keep the base and add the indices.",
+    example:[`${P('2','3')} ${X} ${P('2','4')}`,`= ${P('2','3+4')}`,`= ${P('2','7')} = 128`]},
+  quotient:{name:"Quotient rule",rule:`${P('a','m')} ${DIV} ${P('a','n')} = ${P('a','m−n')}`,
+    explain:"Dividing powers with the same base — keep the base and subtract the indices.",
+    example:[`${P('x','7')} ${DIV} ${P('x','3')}`,`= ${P('x','7−3')}`,`= ${P('x','4')}`]},
+  power:{name:"Power of a power",rule:`(${P('a','m')})<sup>n</sup> = ${P('a','mn')}`,
+    explain:"Raising a power to another power — multiply the indices.",
+    example:[`(${P('5','2')})<sup>3</sup>`,`= ${P('5','2×3')}`,`= ${P('5','6')}`]},
+  product_pow:{name:"Power of a product",rule:`(ab)<sup>n</sup> = ${P('a','n')}${P('b','n')}`,
+    explain:"A product in a bracket — every factor gets the outside power.",
+    example:[`(2x)<sup>3</sup>`,`= ${P('2','3')}${P('x','3')}`,`= ${P('8x','3')}`]},
+  quotient_pow:{name:"Power of a quotient",rule:`(${FR('a','b')})<sup>n</sup> = ${FR(P('a','n'),P('b','n'))}`,
+    explain:"A fraction in a bracket — top and bottom both get the power.",
+    example:[`(${FR('2','3')})<sup>2</sup>`,`= ${FR(P('2','2'),P('3','2'))}`,`= ${FR('4','9')}`]},
+  zero:{name:"Zero index",rule:`${P('a','0')} = 1`,
+    explain:"Anything (except 0) to the power 0 is 1. Mind the brackets: 3x⁰ = 3, but (3x)⁰ = 1.",
+    example:[`${P('7','0')} = 1`,`${P('(3x)','0')} = 1`,`3${P('x','0')} = 3 ${X} 1 = 3`]},
+  negative:{name:"Negative index",rule:`${P('a','−n')} = ${FR('1',P('a','n'))}`,
+    explain:"A negative index means 'one over'. Flip the base to make the index positive.",
+    example:[`${P('2','−3')}`,`= ${FR('1',P('2','3'))}`,`= ${FR('1','8')}`]},
+  fractional:{name:"Fractional index",rule:`${P('a','m/n')} = (<sup>n</sup>√a)<sup>m</sup>`,
+    explain:"Bottom of the fraction is a root, top is a power. So a^(1/n) is the nth root of a.",
+    example:[`${P('8','2/3')}`,`= (<sup>3</sup>√8)<sup>2</sup>`,`= ${P('2','2')} = 4`]},
+  combined:{name:"Combined problems",rule:`work powers, then ± indices`,locked:true,
+    explain:"Real questions mix the laws. Simplify brackets and powers first, then multiply (add indices) or divide (subtract indices).",
+    example:[`(${P('2','3')} ${X} ${P('2','2')})<sup>2</sup>`,`= (${P('2','5')})<sup>2</sup>`,`= ${P('2','10')} = 1024`]}
+};
+const BASE_IDS=Object.keys(LAWS).filter(k=>k!=='combined');
+const LAW_IDS=Object.keys(LAWS);
+
+/* ===== question generators ===== */
+const GEN={
+  product(d){
+    if(d===1){const b=pick([2,3,5,10]),m=rnd(2,4),n=rnd(2,4);
+      return Q({ask:`Write as a single power of ${b}. Enter the index.`,expr:`${P(b,m)} ${X} ${P(b,n)}`,
+        answer:m+n,answerDisplay:`${m+n}`,
+        steps:[`Same base, so <b>add</b> the indices: ${m} + ${n}.`,`Index = <span class="mono">${m+n}</span>.`],
+        traps:[{v:m*n,msg:`You <b>multiplied</b> the indices. For a product with the same base you <b>add</b>: ${m}+${n}.`},
+               {v:m-n,msg:`That's subtraction — the rule for <b>dividing</b>. Multiplying means <b>add</b>: ${m}+${n}.`}]});}
+    if(d===2){const v=pick(['x','y','a']),m=rnd(2,6),n=rnd(2,6),k=rnd(2,4);
+      return Q({ask:`Simplify to ${v}<sup>?</sup> and enter the index.`,expr:`${P(v,m)} ${X} ${P(v,n)} ${X} ${P(v,k)}`,
+        answer:m+n+k,answerDisplay:`${m+n+k}`,
+        steps:[`Same base — add every index.`,`${m} + ${n} + ${k} = <span class="mono">${m+n+k}</span>.`],
+        traps:[{v:m*n*k,msg:`You multiplied. Add the indices when bases match: ${m}+${n}+${k}.`}]});}
+    const v=pick(['x','a','p']),m=rnd(3,7),n=-rnd(1,4);
+    return Q({ask:`Simplify to ${v}<sup>?</sup> and enter the index.`,expr:`${P(v,m)} ${X} ${P(v,n)}`,
+      answer:m+n,answerDisplay:`${m+n}`,
+      steps:[`Add the indices, keeping the sign of the negative one.`,`${m} + (${n}) = <span class="mono">${m+n}</span>.`],
+      traps:[{v:m-n,msg:`Mind the sign: ${m} + (${n}) = ${m+n}, not ${m-n}.`}]});},
+  quotient(d){
+    if(d===1){const b=pick([2,3,5,10]),n=rnd(1,3),m=n+rnd(1,4);
+      return Q({ask:`Write as a single power of ${b}. Enter the index.`,expr:`${P(b,m)} ${DIV} ${P(b,n)}`,
+        answer:m-n,answerDisplay:`${m-n}`,
+        steps:[`Same base, so <b>subtract</b> the indices: ${m} − ${n}.`,`Index = <span class="mono">${m-n}</span>.`],
+        traps:[{v:m+n,msg:`You <b>added</b> — that's for multiplying. Dividing means <b>subtract</b>: ${m}−${n}.`},
+               {v:n-m,msg:`Order matters: top minus bottom, ${m}−${n} = ${m-n}.`}]});}
+    if(d===2){const v=pick(['x','y','a']),m=rnd(4,9),n=rnd(1,3);
+      return Q({ask:`Simplify to ${v}<sup>?</sup> and enter the index.`,expr:`${FR(P(v,m),P(v,n))}`,
+        answer:m-n,answerDisplay:`${m-n}`,
+        steps:[`Subtract the bottom index from the top.`,`${m} − ${n} = <span class="mono">${m-n}</span>.`],
+        traps:[{v:m+n,msg:`Dividing means subtract, not add: ${m}−${n}.`}]});}
+    const v=pick(['x','a','m']),m=rnd(2,4),n=m+rnd(1,4);
+    return Q({ask:`Simplify to ${v}<sup>?</sup> (the index may be negative).`,expr:`${P(v,m)} ${DIV} ${P(v,n)}`,
+      answer:m-n,answerDisplay:`${m-n}`,
+      steps:[`Subtract: ${m} − ${n}.`,`= <span class="mono">${m-n}</span> — a negative index is fine.`],
+      traps:[{v:n-m,msg:`Top minus bottom: ${m}−${n} = ${m-n}.`}]});},
+  power(d){
+    if(d===1){const b=pick([2,3,5]),m=rnd(2,4),n=rnd(2,3);
+      return Q({ask:`Write as a single power of ${b}. Enter the index.`,expr:`(${P(b,m)})<sup>${n}</sup>`,
+        answer:m*n,answerDisplay:`${m*n}`,
+        steps:[`Power of a power — <b>multiply</b> the indices: ${m} × ${n}.`,`Index = <span class="mono">${m*n}</span>.`],
+        traps:[{v:m+n,msg:`You <b>added</b>. A power of a power <b>multiplies</b> indices: ${m}×${n}.`}]});}
+    if(d===2){const v=pick(['x','y','a']),m=rnd(2,6),n=rnd(2,6);
+      return Q({ask:`Simplify to ${v}<sup>?</sup> and enter the index.`,expr:`(${P(v,m)})<sup>${n}</sup>`,
+        answer:m*n,answerDisplay:`${m*n}`,
+        steps:[`Multiply the indices: ${m} × ${n}.`,`Index = <span class="mono">${m*n}</span>.`],
+        traps:[{v:m+n,msg:`Multiply, don't add: ${m}×${n} = ${m*n}.`}]});}
+    const v=pick(['x','a']),m=-rnd(1,3),n=rnd(2,4);
+    return Q({ask:`Simplify to ${v}<sup>?</sup> and enter the index.`,expr:`(${P(v,m)})<sup>${n}</sup>`,
+      answer:m*n,answerDisplay:`${m*n}`,
+      steps:[`Multiply, keeping the sign: (${m}) × ${n}.`,`Index = <span class="mono">${m*n}</span>.`],
+      traps:[{v:m+n,msg:`Multiply the indices: (${m})×${n} = ${m*n}.`}]});},
+  product_pow(d){
+    if(d===1){const n=rnd(2,4);
+      return Q({ask:`Expand (xy)<sup>${n}</sup> = x<sup>?</sup>y<sup>?</sup>. Enter the index.`,expr:`(xy)<sup>${n}</sup>`,
+        answer:n,answerDisplay:`${n}`,
+        steps:[`Each factor inside gets the power ${n}.`,`(xy)<sup>${n}</sup> = ${P('x',n)}${P('y',n)} — index ${n}.`]});}
+    if(d===2){const c=rnd(2,5),n=rnd(2,3);
+      return Q({ask:`Expand and enter the number in front (the coefficient).`,expr:`(${c}x)<sup>${n}</sup>`,
+        answer:Math.pow(c,n),answerDisplay:`${Math.pow(c,n)}`,
+        steps:[`Both the ${c} and the x get the power ${n}.`,`= ${P(c,n)}${P('x',n)} = ${Math.pow(c,n)}${P('x',n)}.`,`Coefficient = <span class="mono">${Math.pow(c,n)}</span>.`],
+        traps:[{v:c*n,msg:`The ${c} is <b>raised to</b> the power, not multiplied: ${c}<sup>${n}</sup> = ${Math.pow(c,n)}.`},
+               {v:c,msg:`Don't forget the ${c} gets the power too: ${c}<sup>${n}</sup> = ${Math.pow(c,n)}.`}]});}
+    const c=rnd(2,4),p=rnd(2,3),n=rnd(2,3);
+    return Q({ask:`Expand and enter the number in front (the coefficient).`,expr:`(${c}${P('x',p)}y)<sup>${n}</sup>`,
+      answer:Math.pow(c,n),answerDisplay:`${Math.pow(c,n)}`,
+      steps:[`Every factor gets the power ${n}.`,`= ${P(c,n)}${P('x',p*n)}${P('y',n)} = ${Math.pow(c,n)}${P('x',p*n)}${P('y',n)}.`,`Coefficient = <span class="mono">${Math.pow(c,n)}</span>.`],
+      traps:[{v:c*n,msg:`The coefficient is ${c} raised to ${n}: ${Math.pow(c,n)}.`}]});},
+  quotient_pow(d){
+    if(d===1){const a=rnd(2,3),b=a+rnd(1,2),n=2;
+      return Q({ask:`Evaluate. Enter as a fraction like a/b.`,expr:`(${FR(a,b)})<sup>${n}</sup>`,
+        answer:(a*a)/(b*b),answerDisplay:fracStr(a*a,b*b),
+        steps:[`Square top and bottom separately.`,`= ${FR(P(a,n),P(b,n))} = ${FR(a*a,b*b)}.`]});}
+    if(d===2){const a=2,b=3,n=3,num=a**n,den=b**n;
+      return Q({ask:`Evaluate. Enter as a fraction like a/b.`,expr:`(${FR(a,b)})<sup>${n}</sup>`,
+        answer:num/den,answerDisplay:fracStr(num,den),
+        steps:[`Raise top and bottom to the power ${n}.`,`= ${FR(P(a,n),P(b,n))} = ${FR(num,den)}.`]});}
+    const n=rnd(2,4);
+    return Q({ask:`Expand (${FR('x','y')})<sup>${n}</sup>. Enter the index on the top.`,expr:`(${FR('x','y')})<sup>${n}</sup>`,
+      answer:n,answerDisplay:`${n}`,
+      steps:[`Top and bottom both get the power ${n}.`,`= ${FR(P('x',n),P('y',n))} — index ${n}.`]});},
+  zero(d){
+    if(d===1){const b=rnd(2,40);
+      return Q({ask:`Evaluate.`,expr:`${P(b,0)}`,answer:1,answerDisplay:`1`,
+        steps:[`Any non-zero number to the power 0 is 1.`,`${P(b,0)} = <span class="mono">1</span>.`],
+        traps:[{v:0,msg:`A power of 0 gives <b>1</b>, not 0.`},{v:b,msg:`It collapses to 1: ${P(b,0)} = 1.`}]});}
+    if(d===2){const c=rnd(2,9);
+      if(Math.random()<0.5) return Q({ask:`Evaluate (assume x ≠ 0).`,expr:`(${c}x)<sup>0</sup>`,answer:1,answerDisplay:`1`,
+        steps:[`The whole bracket is raised to 0.`,`(${c}x)<sup>0</sup> = <span class="mono">1</span>.`],
+        traps:[{v:c,msg:`The bracket means <b>everything</b> is to the power 0, so it's 1, not ${c}.`}]});
+      return Q({ask:`Evaluate (assume x ≠ 0).`,expr:`${c}${P('x',0)}`,answer:c,answerDisplay:`${c}`,
+        steps:[`Only the x has the index 0, not the ${c}.`,`${c}${P('x',0)} = ${c} ${X} 1 = <span class="mono">${c}</span>.`],
+        traps:[{v:1,msg:`No bracket, so only x<sup>0</sup> = 1. The ${c} stays: answer ${c}.`}]});}
+    const c=rnd(2,6),e=rnd(2,4);
+    return Q({ask:`Evaluate (assume a ≠ 0).`,expr:`${c}${P('a',0)} ${X} ${P('a',0)} + ${e}`,answer:c+e,answerDisplay:`${c+e}`,
+      steps:[`Each a<sup>0</sup> becomes 1.`,`${c} ${X} 1 ${X} 1 + ${e} = <span class="mono">${c+e}</span>.`]});},
+  negative(d){
+    if(d===1){const b=rnd(2,9);
+      return Q({ask:`Evaluate. Enter as a fraction like 1/n.`,expr:`${P(b,-1)}`,answer:1/b,answerDisplay:`1/${b}`,
+        steps:[`A negative index means one over the positive power.`,`${P(b,-1)} = ${FR('1',b)}.`],
+        traps:[{v:b,msg:`A negative index isn't a negative number — it means <b>1 over</b>: ${P(b,-1)} = ${FR('1',b)}.`},{v:-b,msg:`It's a reciprocal, not negative: ${P(b,-1)} = ${FR('1',b)}.`}]});}
+    if(d===2){const b=rnd(2,6);
+      return Q({ask:`Evaluate. Enter as a fraction like 1/n.`,expr:`${P(b,-2)}`,answer:1/(b*b),answerDisplay:`1/${b*b}`,
+        steps:[`Flip and make the index positive: ${P(b,-2)} = ${FR('1',P(b,2))}.`,`= ${FR('1',b*b)}.`],
+        traps:[{v:b*b,msg:`You found ${P(b,2)} = ${b*b}; the minus makes it <b>1 over</b> that: ${FR('1',b*b)}.`}]});}
+    const a=2,b=3,n=2;
+    return Q({ask:`Evaluate. Enter as a fraction like a/b.`,expr:`(${FR(a,b)})<sup>−${n}</sup>`,
+      answer:(b*b)/(a*a),answerDisplay:fracStr(b*b,a*a),
+      steps:[`A negative index flips the fraction over.`,`(${FR(a,b)})<sup>−${n}</sup> = (${FR(b,a)})<sup>${n}</sup> = ${FR(b*b,a*a)}.`],
+      traps:[{v:(a*a)/(b*b),msg:`Flip the fraction <b>before</b> squaring: (${FR(b,a)})<sup>${n}</sup> = ${FR(b*b,a*a)}.`}]});},
+  fractional(d){
+    if(d===1){const tbl=[[4,2,2],[9,3,2],[16,4,2],[25,5,2],[36,6,2],[49,7,2],[64,8,2],[81,9,2],[8,2,3],[27,3,3],[64,4,3],[125,5,3]];
+      const t=pick(tbl),base=t[0],val=t[1],root=t[2];
+      return Q({ask:`Evaluate.`,expr:`${P(base,root===2?'1/2':'1/3')}`,answer:val,answerDisplay:`${val}`,
+        steps:[`An index of 1/${root} means the ${root===2?'square':'cube'} root.`,`${root===2?'√':'∛'}${base} = <span class="mono">${val}</span>.`],
+        traps:[{v:base/root,msg:`1/${root} is a <b>root</b>, not divide by ${root}: ${root===2?'√':'∛'}${base} = ${val}.`},{v:base,msg:`Take the root: ${root===2?'√':'∛'}${base} = ${val}.`}]});}
+    if(d===2){const tbl=[[8,'2/3',4,2],[27,'2/3',9,3],[16,'3/4',8,2],[81,'3/4',27,3],[32,'2/5',4,2],[16,'1/4',2,2],[125,'2/3',25,5]];
+      const t=pick(tbl);
+      return Q({ask:`Evaluate.`,expr:`${P(t[0],t[1])}`,answer:t[2],answerDisplay:`${t[2]}`,
+        steps:[`Bottom = root, top = power. Root first: the root is ${t[3]}.`,`Then ${P(t[3],t[1].split('/')[0])} = <span class="mono">${t[2]}</span>.`]});}
+    const tbl=[[8,'-2/3','1/4'],[27,'-2/3','1/9'],[16,'-3/4','1/8'],[32,'-2/5','1/4'],[16,'-1/2','1/4']];
+    const t=pick(tbl),p=t[2].split('/'),val=+p[0]/+p[1];
+    return Q({ask:`Evaluate. Enter as a fraction like 1/n.`,expr:`${P(t[0],t[1])}`,answer:val,answerDisplay:t[2],
+      steps:[`The minus flips it; do root (bottom) then power (top).`,`${P(t[0],t[1])} = ${FR('1','(root)<sup>top</sup>')} = ${t[2]}.`]});},
+  combined(d){
+    const b=pick([2,3,'x','a']);
+    if(d===1){const m=rnd(3,6),n=rnd(2,4),k=rnd(1,3);
+      return Q({ask:`Simplify to ${b}<sup>?</sup> and enter the index.`,expr:`${P(b,m)} ${X} ${P(b,n)} ${DIV} ${P(b,k)}`,
+        answer:m+n-k,answerDisplay:`${m+n-k}`,
+        steps:[`Add for the product, subtract for the quotient.`,`${m} + ${n} − ${k} = <span class="mono">${m+n-k}</span>.`],
+        traps:[{v:m+n+k,msg:`The ÷ means <b>subtract</b> that index: ${m}+${n}−${k}.`}]});}
+    if(d===2){const m=rnd(2,4),n=rnd(2,3),k=rnd(2,5);
+      return Q({ask:`Simplify to ${b}<sup>?</sup> and enter the index.`,expr:`(${P(b,m)})<sup>${n}</sup> ${DIV} ${P(b,k)}`,
+        answer:m*n-k,answerDisplay:`${m*n-k}`,
+        steps:[`Power of a power first: ${m}×${n} = ${m*n}.`,`Then subtract: ${m*n} − ${k} = <span class="mono">${m*n-k}</span>.`],
+        traps:[{v:m+n-k,msg:`Inside is a power of a power — <b>multiply</b> first: ${m}×${n} = ${m*n}, then −${k}.`},{v:m*n+k,msg:`The ÷ means subtract: ${m*n}−${k}.`}]});}
+    const m=rnd(2,4),n=rnd(2,3),p=2;
+    return Q({ask:`Simplify to ${b}<sup>?</sup> and enter the index.`,expr:`(${P(b,m)} ${X} ${P(b,n)})<sup>${p}</sup>`,
+      answer:(m+n)*p,answerDisplay:`${(m+n)*p}`,
+      steps:[`Inside the bracket, add: ${m}+${n} = ${m+n}.`,`Then power of a power: ${m+n} × ${p} = <span class="mono">${(m+n)*p}</span>.`],
+      traps:[{v:m+n,msg:`Don't forget the outside power ${p}: (${m+n}) × ${p} = ${(m+n)*p}.`},{v:m*n*p,msg:`Inside is a product — <b>add</b> first: ${m}+${n} = ${m+n}, then ×${p}.`}]});}
+};
+
+/* ===== personalization presets ===== */
+const ACCENTS={
+  indigo:['#5B34E0','#4724B8'], teal:['#0E9488','#0B6F66'],
+  rose:['#E0436B','#B82F53'], sky:['#2563EB','#1B49B4'], ember:['#E0701A','#B85513']
+};
+
+/* ===== state + persistence ===== */
+const STORE_KEY='powerup-indices-v3';
+const state={
+  laws:{}, totalAnswered:0, totalCorrect:0, streak:0, sinceSeen:{}, reviewQueue:[], started:false,
+  profile:{name:'', theme:'light', accent:'indigo', dailyGoal:20},
+  day:{date:'', count:0}, dayStreak:{count:0, lastDate:''}
+};
+function freshLaws(){
+  LAW_IDS.forEach(id=>{state.laws[id]={mastery:null,attempts:0,correct:0,difficulty:1,streak:0};state.sinceSeen[id]=99;});
+}
+function freshProgress(){
+  state.totalAnswered=0;state.totalCorrect=0;state.streak=0;state.reviewQueue=[];state.started=false;
+  state.day={date:'',count:0};state.dayStreak={count:0,lastDate:''};
+  freshLaws();
+}
+freshProgress();
+
+function persistable(){return{v:3,laws:state.laws,totalAnswered:state.totalAnswered,totalCorrect:state.totalCorrect,
+  profile:state.profile,day:state.day,dayStreak:state.dayStreak};}
+function saveState(){try{localStorage.setItem(STORE_KEY,JSON.stringify(persistable()));}catch(e){}}
+function loadState(){
+  let raw=null;try{raw=localStorage.getItem(STORE_KEY);}catch(e){return false;}
+  if(!raw){return migrateV2();}
+  try{const s=JSON.parse(raw);if(!s||!s.laws)return false;
+    LAW_IDS.forEach(id=>{if(s.laws[id])state.laws[id]=Object.assign({mastery:null,attempts:0,correct:0,difficulty:1,streak:0},s.laws[id]);});
+    state.totalAnswered=s.totalAnswered||0;state.totalCorrect=s.totalCorrect||0;
+    if(s.profile)state.profile=Object.assign(state.profile,s.profile);
+    if(s.day)state.day=s.day; if(s.dayStreak)state.dayStreak=s.dayStreak;
+    LAW_IDS.forEach(id=>state.sinceSeen[id]=99);
+    return state.totalAnswered>0;
+  }catch(e){return false;}
+}
+function migrateV2(){
+  try{const old=localStorage.getItem('powerup-indices-v2');if(!old)return false;
+    const s=JSON.parse(old);if(!s||!s.laws)return false;
+    LAW_IDS.forEach(id=>{if(s.laws[id])state.laws[id]=Object.assign({mastery:null,attempts:0,correct:0,difficulty:1,streak:0},s.laws[id]);});
+    state.totalAnswered=s.totalAnswered||0;state.totalCorrect=s.totalCorrect||0;
+    LAW_IDS.forEach(id=>state.sinceSeen[id]=99);
+    return state.totalAnswered>0;
+  }catch(e){return false;}
+}
+
+/* ===== day streak / daily goal ===== */
+function dStr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function todayStr(){return dStr(new Date());}
+function yesterdayStr(){const d=new Date();d.setDate(d.getDate()-1);return dStr(d);}
+function touchActivity(){
+  const t=todayStr();
+  if(state.day.date!==t){
+    if(state.dayStreak.lastDate===yesterdayStr())state.dayStreak.count+=1;
+    else state.dayStreak.count=1;
+    state.dayStreak.lastDate=t;
+    state.day={date:t,count:0};
+  }
+}
+function displayDayStreak(){
+  const t=todayStr();
+  if(state.dayStreak.lastDate===t||state.dayStreak.lastDate===yesterdayStr())return state.dayStreak.count;
+  return 0;
+}
+
+/* ===== adaptive engine ===== */
+const eff=id=>state.laws[id].mastery==null?30:state.laws[id].mastery;
+function baseAvg(){let s=0;BASE_IDS.forEach(id=>s+=(state.laws[id].mastery==null?0:state.laws[id].mastery));return s/BASE_IDS.length;}
+function combinedUnlocked(){return baseAvg()>=40;}
+
+function chooseLaw(){
+  const unlocked=combinedUnlocked();
+  const weights=LAW_IDS.map(id=>{
+    if(id==='combined'&&!unlocked)return{id,w:0};
+    const L=state.laws[id];
+    let w=8+(100-eff(id))*1.4+Math.min(state.sinceSeen[id],6)*5;
+    if(L.mastery==null)w+=22;
+    if(id==='combined')w*=0.7;
+    w+=Math.random()*10;
+    return{id,w};
+  });
+  const total=weights.reduce((s,x)=>s+x.w,0);
+  let r=Math.random()*total;
+  for(const x of weights){r-=x.w;if(r<=0)return x.id;}
+  return weights.find(x=>x.w>0).id;
+}
+
+let forcedLaw=null,current=null,combinedUnlockedBefore=false;
+function buildQuestion(){
+  let id,redo=false,forcedDiff;
+  const dueIx=state.reviewQueue.findIndex(q=>q.dueAt<=state.totalAnswered);
+  if(forcedLaw){id=forcedLaw;forcedLaw=null;}
+  else if(dueIx>=0){const item=state.reviewQueue.splice(dueIx,1)[0];id=item.lawId;redo=true;forcedDiff=item.difficulty;}
+  else id=chooseLaw();
+  const d=(forcedDiff!==undefined)?forcedDiff:state.laws[id].difficulty;
+  const q=GEN[id](d);q.lawId=id;q.difficulty=d;q.redo=redo;current=q;
+  LAW_IDS.forEach(k=>state.sinceSeen[k]++);state.sinceSeen[id]=0;
+  return q;
+}
+function gradeAnswer(correct){
+  touchActivity();
+  const L=state.laws[current.lawId];
+  L.attempts++;state.totalAnswered++;state.day.count++;
+  const prevM=L.mastery;
+  if(correct){L.correct++;state.totalCorrect++;L.streak++;state.streak++;}
+  else{L.streak=0;state.streak=0;
+    state.reviewQueue.push({lawId:current.lawId,difficulty:current.difficulty,dueAt:state.totalAnswered+rnd(2,3)});}
+  const target=correct?100:0;
+  const alpha=correct?(0.16+0.05*current.difficulty):0.26;
+  const base=L.mastery==null?50:L.mastery;
+  L.mastery=Math.max(0,Math.min(100,Math.round(base+alpha*(target-base))));
+  if(correct&&L.streak>=2&&L.difficulty<3){L.difficulty++;L.streak=0;}
+  if(!correct&&L.difficulty>1)L.difficulty--;
+  if(correct&&prevM!=null&&prevM<80&&L.mastery>=80)showToast('Mastered!',`<b>${LAWS[current.lawId].name}</b> is now ${L.mastery}%. Nicely done.`);
+  if(correct&&!combinedUnlockedBefore&&combinedUnlocked()){combinedUnlockedBefore=true;showToast('Unlocked','<b>Combined problems</b> are now in the mix — questions that chain several laws.');}
+  if(state.day.count===state.profile.dailyGoal)showToast('Goal reached 🎉',`That's your ${state.profile.dailyGoal} for today${state.profile.name?', '+state.profile.name:''}. Keep going or come back tomorrow.`);
+  saveState();
+}
+function overallMastery(){let s=0,c=0;LAW_IDS.forEach(id=>{if(state.laws[id].mastery!=null){s+=state.laws[id].mastery;c++;}});return c?Math.round(s/c):0;}
+function levelName(m){if(state.totalAnswered<3)return"Getting started";if(m<25)return"Beginner";if(m<45)return"Developing";if(m<65)return"Proficient";if(m<82)return"Advanced";return"Index Master";}
+function weakestId(){let id=null,lo=999;LAW_IDS.forEach(k=>{const m=eff(k);if(state.laws[k].attempts>0&&m<lo){lo=m;id=k;}});if(!id)id=LAW_IDS.find(k=>state.laws[k].mastery==null)||BASE_IDS[0];return id;}
+
+/* ===== parsing ===== */
+function parseNum(raw){
+  if(raw==null)return NaN;
+  let s=String(raw).trim().replace(/\s+/g,'').replace(/−/g,'-');
+  if(s==='')return NaN;
+  if(s.includes('/')){const p=s.split('/');if(p.length!==2)return NaN;const a=Number(p[0]),b=Number(p[1]);if(!isFinite(a)||!isFinite(b)||b===0)return NaN;return a/b;}
+  const n=Number(s);return isFinite(n)?n:NaN;
+}
+
+/* ===== DOM ===== */
+const $=s=>document.getElementById(s);
+const els={};['startScreen','practiceArea','focusName','focusTag','qLaw','qAsk','qExpr','answer','submitBtn','inputHint','hintBtn','feedback','fbHead','fbBody','fbDiag','stepsBtn','steps','stepsList','nextRow','nextBtn','stAnswered','stAccuracy','stStreak','stMastery','levelName','ringFill','ringPct','mapGrid','learnAcc','toast','toastTitle','toastBody','footNote','greet','streakChip','streakN','dailyBox','dgCount','dgGoal','dgFill','nameInput','setName','themeSeg','swatches','goalSeg','backdrop','settingsBtn','closeSettings','resetBtn','pad','skipBtn','learnLinkBtn'].forEach(k=>els[k]=$(k));
+
+let toastTimer;
+function showToast(title,body){els.toastTitle.textContent=title;els.toastBody.innerHTML=body;els.toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>els.toast.classList.remove('show'),4200);}
+function setDiffDots(d){document.querySelectorAll('.diff .dot').forEach(dot=>dot.classList.toggle('on',+dot.dataset.d<=d));}
+
+/* ===== on-screen number pad ===== */
+const PAD_KEYS=['7','8','9','4','5','6','1','2','3','-','0','/'];
+function buildPad(){
+  els.pad.innerHTML=PAD_KEYS.map(k=>`<button type="button" data-k="${k}" class="${(k==='-'||k==='/')?'op':''}" aria-label="${k==='-'?'minus':k==='/'?'fraction slash':k}">${k==='-'?'−':k}</button>`).join('')
+    +`<button type="button" data-k="back" class="wide" aria-label="delete">⌫ Delete</button>`;
+  els.pad.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>padPress(b.dataset.k)));
+}
+function padPress(k){
+  const i=els.answer;if(i.disabled)return;i.focus();
+  const s=i.selectionStart??i.value.length,e=i.selectionEnd??s;
+  if(k==='back'){if(s===e&&s>0){i.value=i.value.slice(0,s-1)+i.value.slice(s);i.selectionStart=i.selectionEnd=s-1;}
+    else if(e>s){i.value=i.value.slice(0,s)+i.value.slice(e);i.selectionStart=i.selectionEnd=s;}return;}
+  i.value=i.value.slice(0,s)+k+i.value.slice(e);i.selectionStart=i.selectionEnd=s+1;
+}
+function setAnswering(on){
+  els.pad.querySelectorAll('button').forEach(b=>b.disabled=!on);
+  els.submitBtn.style.display=on?'':'none';
+  els.skipBtn.style.display=on?'':'none';
+  els.hintBtn.style.display=on?'':'none';
+  els.nextRow.style.display=on?'none':'flex';
+}
+function openLawInLearn(lawId){
+  switchView('learn');
+  const d=els.learnAcc.querySelector(`details[data-law="${lawId}"]`);
+  if(d){d.open=true;setTimeout(()=>d.scrollIntoView({behavior:'smooth',block:'center'}),80);}
+}
+
+/* ===== theme/accent application ===== */
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}
+function applyAccent(key){const a=ACCENTS[key]||ACCENTS.indigo;document.documentElement.style.setProperty('--accent',a[0]);document.documentElement.style.setProperty('--accent-d',a[1]);}
+function applyProfile(){
+  applyTheme(state.profile.theme);applyAccent(state.profile.accent);
+  els.greet.innerHTML=state.profile.name?`Hi, <b>${escapeHtml(state.profile.name)}</b> — ready to power up?`:'Master the laws of indices';
+  els.dgGoal.textContent=state.profile.dailyGoal;
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+/* ===== render practice ===== */
+function renderQuestion(){
+  const q=buildQuestion();const L=LAWS[q.lawId];
+  els.focusName.innerHTML=L.name;
+  const st=state.laws[q.lawId];
+  let tag='new',label='New topic';
+  if(q.redo){tag='redo';label='Second look';}
+  else if(st.mastery!=null){
+    if(q.lawId===weakestId()){tag='weak';label='Weakest area';}
+    else if(st.mastery<55){tag='review';label='Needs review';}
+    else{tag='strong';label='Keeping sharp';}
+  }
+  els.focusTag.className='tag '+tag;els.focusTag.textContent=label;
+  els.qLaw.innerHTML=L.name;els.qAsk.innerHTML=q.ask;els.qExpr.innerHTML=q.expr;
+  setDiffDots(q.difficulty);
+  els.answer.value='';els.answer.className='';els.answer.disabled=false;
+  const frac=/\//.test(q.answerDisplay);
+  els.answer.placeholder=frac?'e.g. 1/9':'e.g. 7';
+  els.inputHint.textContent=frac?'Answer is a fraction — type like 1/9 (a decimal is fine too)':'Answer is a whole number';
+  els.submitBtn.disabled=false;els.hintBtn.disabled=false;els.hintBtn.textContent='Hint';els.hintBtn.dataset.stage='0';
+  els.feedback.className='feedback';els.fbHead.innerHTML='';els.fbBody.innerHTML='';
+  els.fbDiag.style.display='none';els.fbDiag.innerHTML='';
+  els.steps.className='steps';els.stepsBtn.style.display='';els.stepsList.innerHTML='';
+  setAnswering(true);
+  els.answer.focus();
+}
+function showFeedback(correct,userVal){
+  els.answer.disabled=true;setAnswering(false);
+  els.answer.classList.add(correct?'ok':'no');
+  els.feedback.classList.add('show',correct?'right':'wrong');
+  els.fbHead.textContent=correct?'✓ Correct':'✕ Not quite';
+  els.fbBody.innerHTML=`The answer is <span class="fb-ans">${current.answerDisplay}</span>.`;
+  if(!correct){const trap=current.traps.find(t=>Math.abs(t.v-userVal)<1e-6);if(trap){els.fbDiag.style.display='';els.fbDiag.innerHTML=trap.msg;}}
+  els.stepsList.innerHTML=current.steps.map(s=>`<li>${s}</li>`).join('');
+  if(!correct){els.steps.classList.add('show');els.stepsBtn.style.display='none';}
+  els.learnLinkBtn.dataset.law=current.lawId;
+  els.inputHint.textContent='';
+  els.nextBtn.focus();
+  updateStats();
+  if(state.totalAnswered%10===0){const acc=Math.round(state.totalCorrect/state.totalAnswered*100);const w=weakestId();showToast(`${state.totalAnswered} answered`,`Accuracy <b>${acc}%</b>. Next focus: <b>${LAWS[w].name}</b>.`);}
+}
+function skip(){
+  if(els.answer.disabled)return;
+  gradeSkip();
+  els.answer.disabled=true;setAnswering(false);
+  els.feedback.classList.add('show','info');
+  els.fbHead.textContent='Here\u2019s how it works';
+  els.fbBody.innerHTML=`The answer is <span class="fb-ans">${current.answerDisplay}</span>. No worries — we\u2019ll bring this type back again soon.`;
+  els.stepsList.innerHTML=current.steps.map(s=>`<li>${s}</li>`).join('');
+  els.steps.classList.add('show');els.stepsBtn.style.display='none';
+  els.learnLinkBtn.dataset.law=current.lawId;
+  els.inputHint.textContent='';els.nextBtn.focus();
+  updateStats();
+}
+function gradeSkip(){
+  touchActivity();
+  state.streak=0;state.laws[current.lawId].streak=0;
+  state.reviewQueue.push({lawId:current.lawId,difficulty:current.difficulty,dueAt:state.totalAnswered+rnd(1,2)});
+  const L=state.laws[current.lawId];if(L.difficulty>1&&Math.random()<0.5)L.difficulty--;
+  saveState();
+}
+function submit(){
+  if(els.answer.disabled)return;
+  const val=parseNum(els.answer.value);
+  if(isNaN(val)){els.answer.classList.add('no');setTimeout(()=>els.answer.classList.remove('no'),350);els.inputHint.textContent='Type a number or a fraction like 1/9';return;}
+  const correct=Math.abs(val-current.answer)<1e-6;
+  gradeAnswer(correct);state.started=true;
+  showFeedback(correct,val);
+}
+function updateStats(){
+  els.stAnswered.textContent=state.totalAnswered;
+  els.stAccuracy.textContent=state.totalAnswered?Math.round(state.totalCorrect/state.totalAnswered*100)+'%':'—';
+  els.stStreak.textContent=state.streak;
+  const m=overallMastery();els.stMastery.textContent=m+'%';
+  els.ringFill.style.strokeDashoffset=106.8*(1-m/100);els.ringPct.textContent=m+'%';
+  els.levelName.textContent=levelName(m);
+  // day streak chip
+  const ds=displayDayStreak();
+  els.streakChip.style.display=ds>0?'':'none';els.streakN.textContent=ds;
+  // daily goal
+  const goal=state.profile.dailyGoal,c=(state.day.date===todayStr()?state.day.count:0);
+  els.dgCount.textContent=c;els.dgGoal.textContent=goal;
+  els.dgFill.style.width=Math.min(100,Math.round(c/goal*100))+'%';
+  els.dailyBox.classList.toggle('done',c>=goal&&goal>0);
+}
+
+/* ===== progress map ===== */
+function masteryColor(m){if(m==null)return'var(--line)';if(m<35)return'var(--wrong)';if(m<60)return'var(--amber)';return'var(--correct)';}
+function jumpToPractice(lawId){
+  forcedLaw=lawId;
+  if(!state.started){els.startScreen.style.display='none';els.practiceArea.style.display='block';state.started=true;updateStats();}
+  switchView('practice');renderQuestion();
+}
+function renderMap(){
+  const wk=weakestId(),unlocked=combinedUnlocked();
+  els.mapGrid.innerHTML=LAW_IDS.map(id=>{
+    const L=LAWS[id],s=state.laws[id],m=s.mastery;
+    const locked=(id==='combined'&&!unlocked);
+    const pctTxt=locked?'🔒':(m==null?'—':m+'%');
+    const acc=locked?'unlocks at 40% avg':(s.attempts?Math.round(s.correct/s.attempts*100)+'% correct':'not started');
+    const focus=(s.attempts>0&&id===wk&&!locked);
+    const pips=[1,2,3].map(d=>`<i class="${d<=s.difficulty?'on':''}"></i>`).join('');
+    return `<div class="mcard ${focus?'focus':''} ${locked?'locked':''}">
+      <div class="mtop"><div><div class="mname">${L.name}</div><div class="mrule">${L.rule}</div></div>
+      ${focus?'<span class="tag weak">Focus</span>':''}${locked?'<span class="tag review">Locked</span>':''}</div>
+      <div class="bar"><i style="width:${locked||m==null?0:m}%;background:${masteryColor(locked?null:m)}"></i></div>
+      <div class="mfoot"><span>${acc}</span><span class="diffpips">Lvl ${pips}</span><span class="pct">${pctTxt}</span></div>
+      <button class="btn btn-ghost practice-this" data-law="${id}" ${locked?'disabled':''}>${locked?'Locked':'Practise this'}</button>
+    </div>`;
+  }).join('');
+  els.mapGrid.querySelectorAll('.practice-this:not([disabled])').forEach(b=>b.addEventListener('click',()=>jumpToPractice(b.dataset.law)));
+}
+
+/* ===== learn ===== */
+function renderLearn(){
+  els.learnAcc.innerHTML=LAW_IDS.map((id,i)=>{
+    const L=LAWS[id];const steps=L.example.map(s=>`<div class="step">${s}</div>`).join('');
+    return `<details class="law" data-law="${id}"><summary>
+      <span class="ls-left"><span class="lnum">${String(i+1).padStart(2,'0')}</span><span class="ltitle">${L.name}</span></span>
+      <span class="lrule">${L.rule}</span>
+      <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
+      </summary><div class="lbody"><p>${L.explain}</p>
+      <div class="ex"><div class="lbl">Worked example</div>${steps}</div>
+      <button class="btn btn-ghost miniprac" data-law="${id}">Practise this law →</button></div></details>`;
+  }).join('');
+  els.learnAcc.querySelectorAll('.miniprac').forEach(b=>b.addEventListener('click',()=>jumpToPractice(b.dataset.law)));
+}
+
+/* ===== nav ===== */
+function switchView(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
+  document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active',s.id==='view-'+v));
+  if(v==='progress')renderMap();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
+
+/* ===== start ===== */
+$('beginBtn').addEventListener('click',()=>{
+  const nm=els.nameInput.value.trim();if(nm)state.profile.name=nm;
+  applyProfile();saveState();
+  els.startScreen.style.display='none';els.practiceArea.style.display='block';
+  state.started=true;updateStats();renderQuestion();
+});
+els.nameInput.addEventListener('keydown',e=>{if(e.key==='Enter')$('beginBtn').click();});
+
+/* ===== answer input ===== */
+els.submitBtn.addEventListener('click',submit);
+els.answer.addEventListener('keydown',e=>{if(e.key==='Enter')submit();});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&els.backdrop.classList.contains('open')){closeSettings();return;}
+  if(e.target.tagName==='BUTTON'||e.target.tagName==='INPUT')return;
+  if(e.key==='Enter'&&els.nextRow.style.display==='flex'&&$('view-practice').classList.contains('active')){e.preventDefault();renderQuestion();}
+});
+els.nextBtn.addEventListener('click',renderQuestion);
+els.skipBtn.addEventListener('click',skip);
+els.stepsBtn.addEventListener('click',()=>{els.steps.classList.add('show');els.stepsBtn.style.display='none';});
+els.learnLinkBtn.addEventListener('click',()=>openLawInLearn(els.learnLinkBtn.dataset.law));
+els.hintBtn.addEventListener('click',()=>{
+  const stage=+(els.hintBtn.dataset.stage||'0'),L=LAWS[current.lawId];
+  if(stage===0){els.inputHint.innerHTML='Rule: '+L.rule;els.hintBtn.textContent='Another hint';els.hintBtn.dataset.stage='1';}
+  else{els.inputHint.innerHTML='Tip: '+current.steps[0];els.hintBtn.textContent='Hint shown';els.hintBtn.disabled=true;}
+});
+
+/* ===== settings ===== */
+function buildSwatches(){
+  els.swatches.innerHTML=Object.keys(ACCENTS).map(k=>`<button class="swatch" data-accent="${k}" title="${k}" style="background:linear-gradient(135deg,${ACCENTS[k][0]},${ACCENTS[k][1]})" aria-label="${k} accent"></button>`).join('');
+  els.swatches.querySelectorAll('.swatch').forEach(b=>b.addEventListener('click',()=>{state.profile.accent=b.dataset.accent;applyAccent(b.dataset.accent);syncSettingsUI();saveState();}));
+}
+function syncSettingsUI(){
+  els.setName.value=state.profile.name||'';
+  els.themeSeg.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.themeOpt===state.profile.theme));
+  els.swatches.querySelectorAll('.swatch').forEach(b=>b.classList.toggle('on',b.dataset.accent===state.profile.accent));
+  els.goalSeg.querySelectorAll('button').forEach(b=>b.classList.toggle('on',+b.dataset.goal===state.profile.dailyGoal));
+}
+function openSettings(){syncSettingsUI();els.backdrop.classList.add('open');els.setName.focus();}
+function closeSettings(){els.backdrop.classList.remove('open');}
+els.settingsBtn.addEventListener('click',openSettings);
+els.closeSettings.addEventListener('click',closeSettings);
+els.backdrop.addEventListener('click',e=>{if(e.target===els.backdrop)closeSettings();});
+els.setName.addEventListener('input',()=>{state.profile.name=els.setName.value.trim();applyProfile();saveState();});
+els.themeSeg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{state.profile.theme=b.dataset.themeOpt;applyTheme(state.profile.theme);syncSettingsUI();saveState();}));
+els.goalSeg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{state.profile.dailyGoal=+b.dataset.goal;applyProfile();updateStats();syncSettingsUI();saveState();}));
+els.resetBtn.addEventListener('click',()=>{
+  const keep={...state.profile};freshProgress();state.profile=keep;combinedUnlockedBefore=false;saveState();
+  closeSettings();els.startScreen.style.display='block';els.practiceArea.style.display='none';
+  updateStats();renderMap();switchView('practice');showToast('Reset','Progress cleared — your settings stayed.');
+});
+
+/* ===== boot ===== */
+const hadHistory=loadState();
+buildSwatches();buildPad();applyProfile();
+combinedUnlockedBefore=combinedUnlocked();
+renderLearn();updateStats();
+els.nameInput.value=state.profile.name||'';
+if(hadHistory){
+  els.startScreen.style.display='none';els.practiceArea.style.display='block';
+  state.started=true;renderQuestion();
+  els.footNote.textContent=state.profile.name?`Welcome back, ${state.profile.name} · progress restored`:'Welcome back · progress restored from this device';
+}
+window.addEventListener('beforeunload',saveState);
+</script>
+</body>
+</html>
