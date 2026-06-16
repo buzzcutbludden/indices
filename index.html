@@ -9,14 +9,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    /* light surfaces */
     --bg:#ECEFF4; --surface:#FFFFFF; --surface-2:#F4F6FA;
     --ink:#14161D; --muted:#586074; --faint:#8A93A6; --line:#E2E7EF;
-    /* accent (set by JS) */
     --accent:#5B34E0; --accent-d:#4724B8;
-    /* status */
     --correct:#0F9A6A; --wrong:#D8472C; --amber:#D9870A;
-    /* derived (auto-adapt to theme + accent) */
     --accent-soft:color-mix(in srgb, var(--accent) 13%, var(--surface));
     --accent-line:color-mix(in srgb, var(--accent) 30%, var(--line));
     --correct-soft:color-mix(in srgb, var(--correct) 14%, var(--surface));
@@ -39,8 +35,6 @@
   sub{font-size:.66em;line-height:0}
   .mono{font-family:"IBM Plex Mono",monospace}
   .wrap{max-width:1000px;margin:0 auto;padding:22px 20px 100px}
-
-  /* ---------- header ---------- */
   header.top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:24px}
   .brand{display:flex;flex-direction:column;gap:2px;min-width:0}
   .logo{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:1.55rem;letter-spacing:-.025em;line-height:1}
@@ -60,18 +54,13 @@
   .ring .pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:"IBM Plex Mono";font-weight:600;font-size:.72rem}
   .icon-btn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.18s}
   .icon-btn:hover{color:var(--accent);border-color:var(--accent-line);transform:translateY(-1px)}
-
-  /* ---------- tabs ---------- */
   nav.tabs{display:flex;gap:5px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:5px;margin-bottom:26px;box-shadow:var(--shadow);width:fit-content}
   nav.tabs button{font-family:"IBM Plex Sans";font-weight:600;font-size:.9rem;color:var(--muted);background:transparent;border:none;border-radius:10px;padding:9px 20px;cursor:pointer;transition:.18s}
   nav.tabs button:hover{color:var(--ink)}
   nav.tabs button.active{background:linear-gradient(180deg,var(--accent),var(--accent-d));color:#fff;box-shadow:0 4px 12px var(--accent-line)}
-
   .view{display:none;animation:fade .35s ease}
   .view.active{display:block}
   @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-
-  /* ---------- start / hero ---------- */
   .start{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow-lg);padding:34px 30px;text-align:center;overflow:hidden;position:relative}
   .hero-motif{display:flex;align-items:flex-end;justify-content:center;gap:14px;height:108px;margin-bottom:22px}
   .tower{display:flex;flex-direction:column;align-items:center;gap:7px}
@@ -85,8 +74,6 @@
   .name-field{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;max-width:420px;margin:0 auto}
   .name-field input{flex:1;min-width:180px;font-family:"IBM Plex Sans";font-size:1rem;padding:12px 16px;border:2px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--ink);outline:none;transition:.16s}
   .name-field input:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 4px var(--accent-soft)}
-
-  /* ---------- daily goal ---------- */
   .daily{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:16px;box-shadow:var(--shadow)}
   .daily .dg-text{font-size:.84rem;color:var(--muted);white-space:nowrap}
   .daily .dg-text b{color:var(--ink);font-family:"Space Grotesk"}
@@ -94,8 +81,6 @@
   .daily .dg-bar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--accent-d));transition:width .6s cubic-bezier(.2,.8,.2,1)}
   .daily.done{border-color:var(--correct);background:var(--correct-soft)}
   .daily.done .dg-bar i{background:linear-gradient(90deg,var(--correct),#0b7d56)}
-
-  /* ---------- practice ---------- */
   .focus-line{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
   .focus-line .why{font-size:.85rem;color:var(--muted)}
   .focus-line .why b{color:var(--ink);font-weight:600}
@@ -104,7 +89,6 @@
   .tag.new{background:var(--accent-soft);color:var(--accent)}
   .tag.review,.tag.redo{background:var(--amber-soft);color:var(--amber)}
   .tag.strong{background:var(--correct-soft);color:var(--correct)}
-
   .qcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow-lg);padding:8px 28px 30px;position:relative;overflow:hidden}
   .qcard::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--accent),var(--accent-d))}
   .qcard .qmeta{display:flex;justify-content:space-between;align-items:center;margin:18px 0 8px}
@@ -113,21 +97,18 @@
   .qcard .diff .dot{width:7px;height:7px;border-radius:50%;background:var(--line)}
   .qcard .diff .dot.on{background:var(--accent)}
   .qcard .diff span{font-size:.7rem;color:var(--faint);margin-right:4px;text-transform:uppercase;letter-spacing:.08em}
-
   .ask{font-size:.95rem;color:var(--muted);margin-bottom:16px}
   .expr{font-family:"IBM Plex Mono";font-weight:600;font-size:clamp(1.8rem,6.5vw,3rem);line-height:1.3;letter-spacing:-.01em;color:var(--ink);margin:8px 0 26px;text-align:center}
   .expr .op{color:var(--accent);margin:0 .18em}
   .frac{display:inline-flex;flex-direction:column;text-align:center;vertical-align:middle;margin:0 .05em}
   .frac .num{border-bottom:.09em solid currentColor;padding:0 .25em .04em}
   .frac .den{padding:.04em .25em 0}
-
   .answer-row{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap;justify-content:center}
   .answer-row input{font-family:"IBM Plex Mono";font-weight:600;font-size:1.4rem;text-align:center;width:200px;max-width:56vw;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--ink);outline:none;transition:border-color .16s,box-shadow .16s,background .16s}
   .answer-row input:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 4px var(--accent-soft)}
   .answer-row input.ok{border-color:var(--correct);background:var(--correct-soft)}
   .answer-row input.no{border-color:var(--wrong);background:var(--wrong-soft);animation:shake .35s}
   @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
-
   .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:288px;margin:14px auto 0}
   .pad button{font-family:"IBM Plex Mono";font-weight:600;font-size:1.18rem;background:var(--surface-2);border:1px solid var(--line);color:var(--ink);height:50px;border-radius:12px;cursor:pointer;transition:.12s}
   .pad button:hover{border-color:var(--accent-line);color:var(--accent)}
@@ -143,7 +124,6 @@
   .how div{display:flex;align-items:center;gap:7px;font-size:.8rem;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:7px 14px}
   .how b{color:var(--ink);font-weight:600}
   .how .num{font-family:"Space Grotesk";color:var(--accent);font-weight:700}
-
   .btn{font-family:"IBM Plex Sans";font-weight:600;font-size:1rem;border:none;border-radius:12px;cursor:pointer;transition:.16s;padding:12px 22px}
   .btn-primary{background:linear-gradient(180deg,var(--accent),var(--accent-d));color:#fff;box-shadow:0 4px 14px var(--accent-line)}
   .btn-primary:hover{filter:brightness(1.06);transform:translateY(-1px)}
@@ -152,9 +132,7 @@
   .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--line);padding:10px 16px;font-size:.86rem}
   .btn-ghost:hover{color:var(--ink);border-color:var(--faint)}
   .btn-ghost:disabled{opacity:.45;cursor:default}
-
   .input-hint{text-align:center;font-size:.76rem;color:var(--faint);margin-top:10px;min-height:1.1em}
-
   .feedback{margin-top:22px;border-radius:14px;padding:18px 20px;display:none}
   .feedback.show{display:block;animation:fade .3s}
   .feedback.right{background:var(--correct-soft);border:1px solid color-mix(in srgb,var(--correct) 35%,var(--surface))}
@@ -164,8 +142,6 @@
   .feedback .fb-head{display:flex;align-items:center;gap:8px;font-weight:600;margin-bottom:6px}
   .feedback.right .fb-head{color:var(--correct)}
   .feedback.wrong .fb-head{color:var(--wrong)}
-  .feedback.info{background:var(--accent-soft);border:1px solid var(--accent-line)}
-  .feedback.info .fb-head{color:var(--accent)}
   .feedback .fb-ans{font-family:"IBM Plex Mono";font-weight:600;color:var(--ink)}
   .fb-diag{margin-top:8px;font-size:.9rem;background:color-mix(in srgb,var(--surface) 70%,transparent);border-radius:10px;padding:9px 12px;color:var(--ink)}
   .fb-diag b{color:var(--wrong)}
@@ -177,14 +153,11 @@
   .steps li::before{content:counter(s);position:absolute;left:0;top:5px;width:20px;height:20px;background:var(--surface);border:1px solid var(--line);border-radius:50%;font-family:"IBM Plex Mono";font-size:.66rem;font-weight:600;display:flex;align-items:center;justify-content:center;color:var(--accent)}
   .steps li .mono{color:var(--accent)}
   .next-row{display:flex;justify-content:center;margin-top:18px}
-
   .statstrip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}
   .stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 14px;text-align:center;box-shadow:var(--shadow)}
   .stat .v{font-family:"Space Grotesk";font-weight:600;font-size:1.5rem;line-height:1}
   .stat .k{font-size:.7rem;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
   .stat .v.flame{color:var(--amber)}
-
-  /* ---------- progress ---------- */
   .section-h{font-family:"Space Grotesk";font-weight:600;font-size:1.18rem;margin:4px 0 4px}
   .section-sub{color:var(--muted);font-size:.9rem;margin-bottom:18px}
   .map{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
@@ -203,8 +176,6 @@
   .diffpips i{width:6px;height:6px;border-radius:50%;background:var(--line)}
   .diffpips i.on{background:var(--accent)}
   .practice-this{margin-top:12px;width:100%}
-
-  /* ---------- learn ---------- */
   .acc{display:flex;flex-direction:column;gap:10px}
   .law{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
   .law summary{list-style:none;cursor:pointer;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
@@ -222,17 +193,12 @@
   .law .lbody .ex .step{padding:2px 0;color:var(--ink)}
   .law .lbody .ex .step .op{color:var(--accent)}
   .law .lbody .miniprac{margin-top:14px}
-
   footer{text-align:center;color:var(--faint);font-size:.78rem;margin-top:30px}
-
-  /* ---------- toast ---------- */
   .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);border-radius:14px;padding:14px 20px;box-shadow:var(--shadow-lg);font-size:.9rem;max-width:min(440px,92vw);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:60}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .toast b{color:var(--accent)}
   [data-theme="dark"] .toast b{color:color-mix(in srgb,var(--accent) 55%,#fff)}
   .toast .t-title{font-family:"Space Grotesk";font-weight:600;margin-bottom:2px}
-
-  /* ---------- settings modal ---------- */
   .backdrop{position:fixed;inset:0;background:rgba(10,12,18,.5);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:70;padding:18px}
   .backdrop.open{display:flex;animation:fade .25s}
   .modal{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow-lg);width:min(460px,100%);max-height:90vh;overflow:auto;padding:24px}
@@ -254,7 +220,6 @@
   .modal-foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:10px}
   .danger{color:var(--wrong);background:transparent;border:1px solid color-mix(in srgb,var(--wrong) 40%,var(--line));border-radius:11px;padding:10px 14px;font-weight:600;font-size:.86rem;cursor:pointer}
   .danger:hover{background:var(--wrong-soft)}
-
   @media (max-width:680px){
     .statstrip{grid-template-columns:repeat(2,1fr)}
     .map{grid-template-columns:1fr}
@@ -342,7 +307,7 @@
         <div class="qmeta">
           <div class="law-name" id="qLaw">—</div>
           <div class="diff"><span>Level</span>
-            <i class="dot" data-d="1"></i><i class="dot" data-d="2"></i><i class="dot" data-d="3"></i>
+            <i class="dot" data-d="1"></i><i class="dot" data-d="2"></i><i class="dot" data-d="3"></i><i class="dot" data-d="4"></i><i class="dot" data-d="5"></i>
           </div>
         </div>
         <div class="ask" id="qAsk">—</div>
@@ -490,7 +455,7 @@ const LAWS={
 const BASE_IDS=Object.keys(LAWS).filter(k=>k!=='combined');
 const LAW_IDS=Object.keys(LAWS);
 
-/* ===== question generators ===== */
+/* ===== question generators (5 difficulty levels) ===== */
 const GEN={
   product(d){
     if(d===1){const b=pick([2,3,5,10]),m=rnd(2,4),n=rnd(2,4);
@@ -504,11 +469,25 @@ const GEN={
         answer:m+n+k,answerDisplay:`${m+n+k}`,
         steps:[`Same base — add every index.`,`${m} + ${n} + ${k} = <span class="mono">${m+n+k}</span>.`],
         traps:[{v:m*n*k,msg:`You multiplied. Add the indices when bases match: ${m}+${n}+${k}.`}]});}
-    const v=pick(['x','a','p']),m=rnd(3,7),n=-rnd(1,4);
-    return Q({ask:`Simplify to ${v}<sup>?</sup> and enter the index.`,expr:`${P(v,m)} ${X} ${P(v,n)}`,
-      answer:m+n,answerDisplay:`${m+n}`,
-      steps:[`Add the indices, keeping the sign of the negative one.`,`${m} + (${n}) = <span class="mono">${m+n}</span>.`],
-      traps:[{v:m-n,msg:`Mind the sign: ${m} + (${n}) = ${m+n}, not ${m-n}.`}]});},
+    if(d===3){const v=pick(['x','a','p']),m=rnd(3,7),n=-rnd(1,4);
+      return Q({ask:`Simplify to ${v}<sup>?</sup> and enter the index.`,expr:`${P(v,m)} ${X} ${P(v,n)}`,
+        answer:m+n,answerDisplay:`${m+n}`,
+        steps:[`Add the indices, keeping the sign of the negative one.`,`${m} + (${n}) = <span class="mono">${m+n}</span>.`],
+        traps:[{v:m-n,msg:`Mind the sign: ${m} + (${n}) = ${m+n}, not ${m-n}.`}]});}
+    if(d===4){const v=pick(['x','a','p']),m=rnd(3,8),n=-rnd(2,5),k=rnd(2,6),j=-rnd(1,4);
+      const ans=m+n+k+j;
+      return Q({ask:`Simplify to ${v}<sup>?</sup> and enter the index.`,expr:`${P(v,m)} ${X} ${P(v,n)} ${X} ${P(v,k)} ${X} ${P(v,j)}`,
+        answer:ans,answerDisplay:`${ans}`,
+        steps:[`Add all the indices, respecting signs.`,`${m} + (${n}) + ${k} + (${j}) = <span class="mono">${ans}</span>.`],
+        traps:[{v:m+k,msg:`Don't ignore the negative indices: include (${n}) and (${j}).`},
+               {v:m*n*k*j,msg:`Add, don't multiply: ${m}+(${n})+${k}+(${j}) = ${ans}.`}]});}
+    /* d===5 */ const v=pick(['a','m','t']),m=-rnd(3,7),n=-rnd(2,5),k=rnd(1,3);
+    const ans=m+n+k;
+    return Q({ask:`Simplify to ${v}<sup>?</sup> and enter the index.`,expr:`${P(v,m)} ${X} ${P(v,n)} ${X} ${P(v,k)}`,
+      answer:ans,answerDisplay:`${ans}`,
+      steps:[`Add all indices: (${m}) + (${n}) + ${k}.`,`= <span class="mono">${ans}</span>.`],
+      traps:[{v:-(m+n+k),msg:`Check signs: (${m})+(${n})+${k} = ${ans}.`}]});},
+
   quotient(d){
     if(d===1){const b=pick([2,3,5,10]),n=rnd(1,3),m=n+rnd(1,4);
       return Q({ask:`Write as a single power of ${b}. Enter the index.`,expr:`${P(b,m)} ${DIV} ${P(b,n)}`,
@@ -521,11 +500,25 @@ const GEN={
         answer:m-n,answerDisplay:`${m-n}`,
         steps:[`Subtract the bottom index from the top.`,`${m} − ${n} = <span class="mono">${m-n}</span>.`],
         traps:[{v:m+n,msg:`Dividing means subtract, not add: ${m}−${n}.`}]});}
-    const v=pick(['x','a','m']),m=rnd(2,4),n=m+rnd(1,4);
-    return Q({ask:`Simplify to ${v}<sup>?</sup> (the index may be negative).`,expr:`${P(v,m)} ${DIV} ${P(v,n)}`,
-      answer:m-n,answerDisplay:`${m-n}`,
-      steps:[`Subtract: ${m} − ${n}.`,`= <span class="mono">${m-n}</span> — a negative index is fine.`],
-      traps:[{v:n-m,msg:`Top minus bottom: ${m}−${n} = ${m-n}.`}]});},
+    if(d===3){const v=pick(['x','a','m']),m=rnd(2,4),n=m+rnd(1,4);
+      return Q({ask:`Simplify to ${v}<sup>?</sup> (the index may be negative).`,expr:`${P(v,m)} ${DIV} ${P(v,n)}`,
+        answer:m-n,answerDisplay:`${m-n}`,
+        steps:[`Subtract: ${m} − ${n}.`,`= <span class="mono">${m-n}</span> — a negative index is fine.`],
+        traps:[{v:n-m,msg:`Top minus bottom: ${m}−${n} = ${m-n}.`}]});}
+    if(d===4){const v=pick(['x','a','n']),m=-rnd(1,4),n=rnd(2,5);
+      return Q({ask:`Simplify to ${v}<sup>?</sup> and enter the index.`,expr:`${P(v,m)} ${DIV} ${P(v,n)}`,
+        answer:m-n,answerDisplay:`${m-n}`,
+        steps:[`Subtract: (${m}) − ${n} = ${m-n}.`,`A negative minus a positive makes a larger negative.`],
+        traps:[{v:m+n,msg:`Dividing means <b>subtract</b>: (${m})−${n} = ${m-n}.`},
+               {v:n-m,msg:`Top minus bottom, not the other way: (${m})−${n} = ${m-n}.`}]});}
+    /* d===5 */ const v=pick(['x','a']),m=-rnd(2,6),n=-rnd(1,5);
+    const ans=m-n;
+    return Q({ask:`Simplify to ${v}<sup>?</sup>. Both indices are negative.`,expr:`${P(v,m)} ${DIV} ${P(v,n)}`,
+      answer:ans,answerDisplay:`${ans}`,
+      steps:[`Subtract: (${m}) − (${n}) = ${m} + ${-n} = ${ans}.`,`Subtracting a negative adds.`],
+      traps:[{v:m+n,msg:`Dividing is subtract, not add: (${m})−(${n}) = ${ans}.`},
+             {v:-(m-n),msg:`Be careful with double negatives: (${m})−(${n}) = ${ans}.`}]});},
+
   power(d){
     if(d===1){const b=pick([2,3,5]),m=rnd(2,4),n=rnd(2,3);
       return Q({ask:`Write as a single power of ${b}. Enter the index.`,expr:`(${P(b,m)})<sup>${n}</sup>`,
@@ -537,11 +530,24 @@ const GEN={
         answer:m*n,answerDisplay:`${m*n}`,
         steps:[`Multiply the indices: ${m} × ${n}.`,`Index = <span class="mono">${m*n}</span>.`],
         traps:[{v:m+n,msg:`Multiply, don't add: ${m}×${n} = ${m*n}.`}]});}
-    const v=pick(['x','a']),m=-rnd(1,3),n=rnd(2,4);
+    if(d===3){const v=pick(['x','a']),m=-rnd(1,3),n=rnd(2,4);
+      return Q({ask:`Simplify to ${v}<sup>?</sup> and enter the index.`,expr:`(${P(v,m)})<sup>${n}</sup>`,
+        answer:m*n,answerDisplay:`${m*n}`,
+        steps:[`Multiply, keeping the sign: (${m}) × ${n}.`,`Index = <span class="mono">${m*n}</span>.`],
+        traps:[{v:m+n,msg:`Multiply the indices: (${m})×${n} = ${m*n}.`}]});}
+    if(d===4){const v=pick(['x','a']),m=rnd(2,5),n=-rnd(2,4);
+      return Q({ask:`Simplify to ${v}<sup>?</sup> and enter the index.`,expr:`(${P(v,m)})<sup>${n}</sup>`,
+        answer:m*n,answerDisplay:`${m*n}`,
+        steps:[`Multiply: ${m} × (${n}) = ${m*n}.`,`A positive times a negative gives a negative index.`],
+        traps:[{v:m+n,msg:`Multiply, don't add: ${m}×(${n}) = ${m*n}.`},
+               {v:-m*n,msg:`${m}×(${n}) is negative: ${m*n}.`}]});}
+    /* d===5 */ const v=pick(['x','a','b']),m=-rnd(2,4),n=-rnd(2,3);
     return Q({ask:`Simplify to ${v}<sup>?</sup> and enter the index.`,expr:`(${P(v,m)})<sup>${n}</sup>`,
       answer:m*n,answerDisplay:`${m*n}`,
-      steps:[`Multiply, keeping the sign: (${m}) × ${n}.`,`Index = <span class="mono">${m*n}</span>.`],
-      traps:[{v:m+n,msg:`Multiply the indices: (${m})×${n} = ${m*n}.`}]});},
+      steps:[`Multiply two negatives: (${m}) × (${n}) = ${m*n}.`,`Negative × negative = positive.`],
+      traps:[{v:m+n,msg:`Multiply, don't add: (${m})×(${n}) = ${m*n}.`},
+             {v:-(m*n),msg:`Negative times negative is <b>positive</b>: ${m*n}.`}]});},
+
   product_pow(d){
     if(d===1){const n=rnd(2,4);
       return Q({ask:`Expand (xy)<sup>${n}</sup> = x<sup>?</sup>y<sup>?</sup>. Enter the index.`,expr:`(xy)<sup>${n}</sup>`,
@@ -553,11 +559,23 @@ const GEN={
         steps:[`Both the ${c} and the x get the power ${n}.`,`= ${P(c,n)}${P('x',n)} = ${Math.pow(c,n)}${P('x',n)}.`,`Coefficient = <span class="mono">${Math.pow(c,n)}</span>.`],
         traps:[{v:c*n,msg:`The ${c} is <b>raised to</b> the power, not multiplied: ${c}<sup>${n}</sup> = ${Math.pow(c,n)}.`},
                {v:c,msg:`Don't forget the ${c} gets the power too: ${c}<sup>${n}</sup> = ${Math.pow(c,n)}.`}]});}
-    const c=rnd(2,4),p=rnd(2,3),n=rnd(2,3);
-    return Q({ask:`Expand and enter the number in front (the coefficient).`,expr:`(${c}${P('x',p)}y)<sup>${n}</sup>`,
+    if(d===3){const c=rnd(2,4),p=rnd(2,3),n=rnd(2,3);
+      return Q({ask:`Expand and enter the number in front (the coefficient).`,expr:`(${c}${P('x',p)}y)<sup>${n}</sup>`,
+        answer:Math.pow(c,n),answerDisplay:`${Math.pow(c,n)}`,
+        steps:[`Every factor gets the power ${n}.`,`= ${P(c,n)}${P('x',p*n)}${P('y',n)} = ${Math.pow(c,n)}${P('x',p*n)}${P('y',n)}.`,`Coefficient = <span class="mono">${Math.pow(c,n)}</span>.`],
+        traps:[{v:c*n,msg:`The coefficient is ${c} raised to ${n}: ${Math.pow(c,n)}.`}]});}
+    if(d===4){const c=rnd(2,4),p=rnd(2,4),n=rnd(2,4);
+      return Q({ask:`What is the index on x?`,expr:`(${c}${P('x',p)})<sup>${n}</sup>`,
+        answer:p*n,answerDisplay:`${p*n}`,
+        steps:[`The x already has index ${p}; power-of-a-power multiplies.`,`Index on x: ${p} × ${n} = <span class="mono">${p*n}</span>.`],
+        traps:[{v:p+n,msg:`Power of a power <b>multiplies</b>: ${p}×${n} = ${p*n}, not ${p+n}.`},
+               {v:Math.pow(c,n),msg:`That's the coefficient. The index on x is ${p}×${n} = ${p*n}.`}]});}
+    /* d===5 */ const c=rnd(2,5),n=rnd(3,4);
+    return Q({ask:`Expand and enter the number in front (the coefficient).`,expr:`(${c}${P('x',2)}${P('y',3)})<sup>${n}</sup>`,
       answer:Math.pow(c,n),answerDisplay:`${Math.pow(c,n)}`,
-      steps:[`Every factor gets the power ${n}.`,`= ${P(c,n)}${P('x',p*n)}${P('y',n)} = ${Math.pow(c,n)}${P('x',p*n)}${P('y',n)}.`,`Coefficient = <span class="mono">${Math.pow(c,n)}</span>.`],
-      traps:[{v:c*n,msg:`The coefficient is ${c} raised to ${n}: ${Math.pow(c,n)}.`}]});},
+      steps:[`Every factor gets the power ${n}: ${c}<sup>${n}</sup> = ${Math.pow(c,n)}.`,`x index: 2×${n} = ${2*n}. y index: 3×${n} = ${3*n}.`,`Coefficient = <span class="mono">${Math.pow(c,n)}</span>.`],
+      traps:[{v:c*n,msg:`Raise ${c} to the power ${n}, don't multiply: ${Math.pow(c,n)}.`}]});},
+
   quotient_pow(d){
     if(d===1){const a=rnd(2,3),b=a+rnd(1,2),n=2;
       return Q({ask:`Evaluate. Enter as a fraction like a/b.`,expr:`(${FR(a,b)})<sup>${n}</sup>`,
@@ -567,10 +585,22 @@ const GEN={
       return Q({ask:`Evaluate. Enter as a fraction like a/b.`,expr:`(${FR(a,b)})<sup>${n}</sup>`,
         answer:num/den,answerDisplay:fracStr(num,den),
         steps:[`Raise top and bottom to the power ${n}.`,`= ${FR(P(a,n),P(b,n))} = ${FR(num,den)}.`]});}
-    const n=rnd(2,4);
-    return Q({ask:`Expand (${FR('x','y')})<sup>${n}</sup>. Enter the index on the top.`,expr:`(${FR('x','y')})<sup>${n}</sup>`,
-      answer:n,answerDisplay:`${n}`,
-      steps:[`Top and bottom both get the power ${n}.`,`= ${FR(P('x',n),P('y',n))} — index ${n}.`]});},
+    if(d===3){const n=rnd(2,4);
+      return Q({ask:`Expand (${FR('x','y')})<sup>${n}</sup>. Enter the index on the top.`,expr:`(${FR('x','y')})<sup>${n}</sup>`,
+        answer:n,answerDisplay:`${n}`,
+        steps:[`Top and bottom both get the power ${n}.`,`= ${FR(P('x',n),P('y',n))} — index ${n}.`]});}
+    if(d===4){const a=rnd(2,4),b=rnd(2,4),n=rnd(2,3),num=Math.pow(a,n),den=Math.pow(b,n);
+      return Q({ask:`Evaluate. Enter as a fraction like a/b.`,expr:`(${FR(a,b)})<sup>${n}</sup>`,
+        answer:num/den,answerDisplay:fracStr(num,den),
+        steps:[`${a}<sup>${n}</sup> = ${num}, ${b}<sup>${n}</sup> = ${den}.`,`= ${FR(num,den)}.`],
+        traps:[{v:den/num,msg:`Don't flip — top stays top: ${FR(num,den)}.`}]});}
+    /* d===5 */ const a=rnd(2,3),b=a+rnd(1,2),n=2;
+    const num=b*b,den=a*a;
+    return Q({ask:`Evaluate. Enter as a fraction like a/b.`,expr:`(${FR(a,b)})<sup>−${n}</sup>`,
+      answer:num/den,answerDisplay:fracStr(num,den),
+      steps:[`Negative power flips the fraction first.`,`(${FR(a,b)})<sup>−${n}</sup> = (${FR(b,a)})<sup>${n}</sup> = ${FR(num,den)}.`],
+      traps:[{v:(a*a)/(b*b),msg:`The minus flips the fraction <b>before</b> squaring: (${FR(b,a)})<sup>${n}</sup>.`}]});},
+
   zero(d){
     if(d===1){const b=rnd(2,40);
       return Q({ask:`Evaluate.`,expr:`${P(b,0)}`,answer:1,answerDisplay:`1`,
@@ -583,9 +613,21 @@ const GEN={
       return Q({ask:`Evaluate (assume x ≠ 0).`,expr:`${c}${P('x',0)}`,answer:c,answerDisplay:`${c}`,
         steps:[`Only the x has the index 0, not the ${c}.`,`${c}${P('x',0)} = ${c} ${X} 1 = <span class="mono">${c}</span>.`],
         traps:[{v:1,msg:`No bracket, so only x<sup>0</sup> = 1. The ${c} stays: answer ${c}.`}]});}
-    const c=rnd(2,6),e=rnd(2,4);
-    return Q({ask:`Evaluate (assume a ≠ 0).`,expr:`${c}${P('a',0)} ${X} ${P('a',0)} + ${e}`,answer:c+e,answerDisplay:`${c+e}`,
-      steps:[`Each a<sup>0</sup> becomes 1.`,`${c} ${X} 1 ${X} 1 + ${e} = <span class="mono">${c+e}</span>.`]});},
+    if(d===3){const c=rnd(2,6),e=rnd(2,4);
+      return Q({ask:`Evaluate (assume a ≠ 0).`,expr:`${c}${P('a',0)} ${X} ${P('a',0)} + ${e}`,answer:c+e,answerDisplay:`${c+e}`,
+        steps:[`Each a<sup>0</sup> becomes 1.`,`${c} ${X} 1 ${X} 1 + ${e} = <span class="mono">${c+e}</span>.`]});}
+    if(d===4){const c=rnd(3,8),e=rnd(2,5),f=rnd(2,4);
+      const ans=c-e+f;
+      return Q({ask:`Evaluate (assume x ≠ 0).`,expr:`${c}${P('x',0)} − ${e}(${P('x',0)}) + ${f}`,answer:ans,answerDisplay:`${ans}`,
+        steps:[`Replace every x<sup>0</sup> with 1.`,`${c}(1) − ${e}(1) + ${f} = ${c} − ${e} + ${f} = <span class="mono">${ans}</span>.`],
+        traps:[{v:c+e+f,msg:`Watch the minus sign: ${c} − ${e} + ${f} = ${ans}.`}]});}
+    /* d===5 */ const c=rnd(2,5),e=rnd(2,5),p=rnd(2,4);
+    const ans=Math.pow(c,p)*1;
+    return Q({ask:`Evaluate (assume a ≠ 0).`,expr:`(${c}${P('a',0)})<sup>${p}</sup>`,answer:ans,answerDisplay:`${ans}`,
+      steps:[`First: a<sup>0</sup> = 1, so inside = ${c}(1) = ${c}.`,`Then ${c}<sup>${p}</sup> = <span class="mono">${ans}</span>.`],
+      traps:[{v:1,msg:`The bracket has ${c} × a<sup>0</sup> = ${c}, then ${c}<sup>${p}</sup> = ${ans}.`},
+             {v:c,msg:`Don't forget the outer power: ${c}<sup>${p}</sup> = ${ans}.`}]});},
+
   negative(d){
     if(d===1){const b=rnd(2,9);
       return Q({ask:`Evaluate. Enter as a fraction like 1/n.`,expr:`${P(b,-1)}`,answer:1/b,answerDisplay:`1/${b}`,
@@ -595,11 +637,23 @@ const GEN={
       return Q({ask:`Evaluate. Enter as a fraction like 1/n.`,expr:`${P(b,-2)}`,answer:1/(b*b),answerDisplay:`1/${b*b}`,
         steps:[`Flip and make the index positive: ${P(b,-2)} = ${FR('1',P(b,2))}.`,`= ${FR('1',b*b)}.`],
         traps:[{v:b*b,msg:`You found ${P(b,2)} = ${b*b}; the minus makes it <b>1 over</b> that: ${FR('1',b*b)}.`}]});}
-    const a=2,b=3,n=2;
-    return Q({ask:`Evaluate. Enter as a fraction like a/b.`,expr:`(${FR(a,b)})<sup>−${n}</sup>`,
-      answer:(b*b)/(a*a),answerDisplay:fracStr(b*b,a*a),
-      steps:[`A negative index flips the fraction over.`,`(${FR(a,b)})<sup>−${n}</sup> = (${FR(b,a)})<sup>${n}</sup> = ${FR(b*b,a*a)}.`],
-      traps:[{v:(a*a)/(b*b),msg:`Flip the fraction <b>before</b> squaring: (${FR(b,a)})<sup>${n}</sup> = ${FR(b*b,a*a)}.`}]});},
+    if(d===3){const a=2,b=3,n=2;
+      return Q({ask:`Evaluate. Enter as a fraction like a/b.`,expr:`(${FR(a,b)})<sup>−${n}</sup>`,
+        answer:(b*b)/(a*a),answerDisplay:fracStr(b*b,a*a),
+        steps:[`A negative index flips the fraction over.`,`(${FR(a,b)})<sup>−${n}</sup> = (${FR(b,a)})<sup>${n}</sup> = ${FR(b*b,a*a)}.`],
+        traps:[{v:(a*a)/(b*b),msg:`Flip the fraction <b>before</b> squaring: (${FR(b,a)})<sup>${n}</sup> = ${FR(b*b,a*a)}.`}]});}
+    if(d===4){const b=rnd(2,5);
+      return Q({ask:`Evaluate. Enter as a fraction like 1/n.`,expr:`${P(b,-3)}`,answer:1/Math.pow(b,3),answerDisplay:`1/${Math.pow(b,3)}`,
+        steps:[`Flip: ${P(b,-3)} = ${FR('1',P(b,3))}.`,`${b}<sup>3</sup> = ${Math.pow(b,3)}, so answer is ${FR('1',Math.pow(b,3))}.`],
+        traps:[{v:Math.pow(b,3),msg:`The negative index means <b>1 over</b>: ${FR('1',Math.pow(b,3))}.`},
+               {v:1/(b*b),msg:`The power is 3, not 2: ${b}<sup>3</sup> = ${Math.pow(b,3)}.`}]});}
+    /* d===5 */ const c=rnd(2,4),b=rnd(2,4);
+    const val=c*Math.pow(b,2);
+    return Q({ask:`Evaluate. Give the whole number.`,expr:`${c} ${X} ${P(b,-2)} ${X} ${P(b,4)}`,
+      answer:c*b*b,answerDisplay:`${c*b*b}`,
+      steps:[`Combine the powers of ${b}: ${P(b,-2)} ${X} ${P(b,4)} = ${P(b,-2+4)} = ${P(b,2)}.`,`Then ${c} × ${b}<sup>2</sup> = ${c} × ${b*b} = <span class="mono">${c*b*b}</span>.`],
+      traps:[{v:c,msg:`Don't forget to evaluate ${b}<sup>2</sup> = ${b*b}, then multiply by ${c}.`}]});},
+
   fractional(d){
     if(d===1){const tbl=[[4,2,2],[9,3,2],[16,4,2],[25,5,2],[36,6,2],[49,7,2],[64,8,2],[81,9,2],[8,2,3],[27,3,3],[64,4,3],[125,5,3]];
       const t=pick(tbl),base=t[0],val=t[1],root=t[2];
@@ -610,10 +664,21 @@ const GEN={
       const t=pick(tbl);
       return Q({ask:`Evaluate.`,expr:`${P(t[0],t[1])}`,answer:t[2],answerDisplay:`${t[2]}`,
         steps:[`Bottom = root, top = power. Root first: the root is ${t[3]}.`,`Then ${P(t[3],t[1].split('/')[0])} = <span class="mono">${t[2]}</span>.`]});}
-    const tbl=[[8,'-2/3','1/4'],[27,'-2/3','1/9'],[16,'-3/4','1/8'],[32,'-2/5','1/4'],[16,'-1/2','1/4']];
+    if(d===3){const tbl=[[8,'-2/3','1/4'],[27,'-2/3','1/9'],[16,'-3/4','1/8'],[32,'-2/5','1/4'],[16,'-1/2','1/4']];
+      const t=pick(tbl),p=t[2].split('/'),val=+p[0]/+p[1];
+      return Q({ask:`Evaluate. Enter as a fraction like 1/n.`,expr:`${P(t[0],t[1])}`,answer:val,answerDisplay:t[2],
+        steps:[`The minus flips it; do root (bottom) then power (top).`,`${P(t[0],t[1])} = ${FR('1','(root)<sup>top</sup>')} = ${t[2]}.`]});}
+    if(d===4){const tbl=[[64,'2/3',16],[32,'3/5',8],[243,'2/5',9],[256,'3/4',64],[1000,'2/3',100]];
+      const t=pick(tbl);
+      return Q({ask:`Evaluate.`,expr:`${P(t[0],t[1])}`,answer:t[2],answerDisplay:`${t[2]}`,
+        steps:[`Bottom of the fraction = root, top = power.`,`${P(t[0],t[1])} = <span class="mono">${t[2]}</span>.`],
+        traps:[{v:t[0],msg:`You need to take the root and then raise to the power.`}]});}
+    /* d===5 */ const tbl=[[64,'-2/3','1/16'],[243,'-2/5','1/9'],[32,'-3/5','1/8'],[256,'-3/4','1/64']];
     const t=pick(tbl),p=t[2].split('/'),val=+p[0]/+p[1];
     return Q({ask:`Evaluate. Enter as a fraction like 1/n.`,expr:`${P(t[0],t[1])}`,answer:val,answerDisplay:t[2],
-      steps:[`The minus flips it; do root (bottom) then power (top).`,`${P(t[0],t[1])} = ${FR('1','(root)<sup>top</sup>')} = ${t[2]}.`]});},
+      steps:[`Negative flips it. Root first (bottom), then power (top).`,`${P(t[0],t[1])} = ${t[2]}.`],
+      traps:[{v:-val,msg:`The negative index means reciprocal, not a negative number.`}]});},
+
   combined(d){
     const b=pick([2,3,'x','a']);
     if(d===1){const m=rnd(3,6),n=rnd(2,4),k=rnd(1,3);
@@ -626,11 +691,24 @@ const GEN={
         answer:m*n-k,answerDisplay:`${m*n-k}`,
         steps:[`Power of a power first: ${m}×${n} = ${m*n}.`,`Then subtract: ${m*n} − ${k} = <span class="mono">${m*n-k}</span>.`],
         traps:[{v:m+n-k,msg:`Inside is a power of a power — <b>multiply</b> first: ${m}×${n} = ${m*n}, then −${k}.`},{v:m*n+k,msg:`The ÷ means subtract: ${m*n}−${k}.`}]});}
-    const m=rnd(2,4),n=rnd(2,3),p=2;
-    return Q({ask:`Simplify to ${b}<sup>?</sup> and enter the index.`,expr:`(${P(b,m)} ${X} ${P(b,n)})<sup>${p}</sup>`,
-      answer:(m+n)*p,answerDisplay:`${(m+n)*p}`,
-      steps:[`Inside the bracket, add: ${m}+${n} = ${m+n}.`,`Then power of a power: ${m+n} × ${p} = <span class="mono">${(m+n)*p}</span>.`],
-      traps:[{v:m+n,msg:`Don't forget the outside power ${p}: (${m+n}) × ${p} = ${(m+n)*p}.`},{v:m*n*p,msg:`Inside is a product — <b>add</b> first: ${m}+${n} = ${m+n}, then ×${p}.`}]});}
+    if(d===3){const m=rnd(2,4),n=rnd(2,3),p=2;
+      return Q({ask:`Simplify to ${b}<sup>?</sup> and enter the index.`,expr:`(${P(b,m)} ${X} ${P(b,n)})<sup>${p}</sup>`,
+        answer:(m+n)*p,answerDisplay:`${(m+n)*p}`,
+        steps:[`Inside the bracket, add: ${m}+${n} = ${m+n}.`,`Then power of a power: ${m+n} × ${p} = <span class="mono">${(m+n)*p}</span>.`],
+        traps:[{v:m+n,msg:`Don't forget the outside power ${p}: (${m+n}) × ${p} = ${(m+n)*p}.`},{v:m*n*p,msg:`Inside is a product — <b>add</b> first: ${m}+${n} = ${m+n}, then ×${p}.`}]});}
+    if(d===4){const m=rnd(2,4),n=rnd(2,3),p=rnd(2,3),k=rnd(2,5);
+      const ans=(m+n)*p-k;
+      return Q({ask:`Simplify to ${b}<sup>?</sup> and enter the index.`,expr:`(${P(b,m)} ${X} ${P(b,n)})<sup>${p}</sup> ${DIV} ${P(b,k)}`,
+        answer:ans,answerDisplay:`${ans}`,
+        steps:[`Inside bracket: add ${m}+${n} = ${m+n}.`,`Power of a power: ${m+n} × ${p} = ${(m+n)*p}.`,`Then subtract: ${(m+n)*p} − ${k} = <span class="mono">${ans}</span>.`],
+        traps:[{v:(m+n)*p+k,msg:`The ÷ means <b>subtract</b>: ${(m+n)*p}−${k} = ${ans}.`},
+               {v:(m+n)*p,msg:`Don't forget to subtract the ${k} from dividing.`}]});}
+    /* d===5 */ const m=rnd(2,3),n=rnd(2,3),p=rnd(2,3),k=rnd(2,4),j=rnd(1,3);
+    const ans=(m*n+k)*p-j;
+    return Q({ask:`Simplify to ${b}<sup>?</sup> and enter the index.`,expr:`((${P(b,m)})<sup>${n}</sup> ${X} ${P(b,k)})<sup>${p}</sup> ${DIV} ${P(b,j)}`,
+      answer:ans,answerDisplay:`${ans}`,
+      steps:[`Power of a power: ${m}×${n} = ${m*n}.`,`Add: ${m*n}+${k} = ${m*n+k}. Outside power: (${m*n+k})×${p} = ${(m*n+k)*p}.`,`Subtract: ${(m*n+k)*p}−${j} = <span class="mono">${ans}</span>.`],
+      traps:[{v:(m+n+k)*p-j,msg:`Power of a power <b>multiplies</b>: ${m}×${n} = ${m*n}, then add ${k}.`}]});}
 };
 
 /* ===== personalization presets ===== */
@@ -746,7 +824,7 @@ function gradeAnswer(correct){
   const alpha=correct?(0.16+0.05*current.difficulty):0.26;
   const base=L.mastery==null?50:L.mastery;
   L.mastery=Math.max(0,Math.min(100,Math.round(base+alpha*(target-base))));
-  if(correct&&L.streak>=2&&L.difficulty<3){L.difficulty++;L.streak=0;}
+  if(correct&&L.streak>=2&&L.difficulty<5){L.difficulty++;L.streak=0;}
   if(!correct&&L.difficulty>1)L.difficulty--;
   if(correct&&prevM!=null&&prevM<80&&L.mastery>=80)showToast('Mastered!',`<b>${LAWS[current.lawId].name}</b> is now ${L.mastery}%. Nicely done.`);
   if(correct&&!combinedUnlockedBefore&&combinedUnlocked()){combinedUnlockedBefore=true;showToast('Unlocked','<b>Combined problems</b> are now in the mix — questions that chain several laws.');}
@@ -768,7 +846,8 @@ function parseNum(raw){
 
 /* ===== DOM ===== */
 const $=s=>document.getElementById(s);
-const els={};['startScreen','practiceArea','focusName','focusTag','qLaw','qAsk','qExpr','answer','submitBtn','inputHint','hintBtn','feedback','fbHead','fbBody','fbDiag','stepsBtn','steps','stepsList','nextRow','nextBtn','stAnswered','stAccuracy','stStreak','stMastery','levelName','ringFill','ringPct','mapGrid','learnAcc','toast','toastTitle','toastBody','footNote','greet','streakChip','streakN','dailyBox','dgCount','dgGoal','dgFill','nameInput','setName','themeSeg','swatches','goalSeg','backdrop','settingsBtn','closeSettings','resetBtn','pad','skipBtn','learnLinkBtn'].forEach(k=>els[k]=$(k));
+const els={};
+['startScreen','practiceArea','focusName','focusTag','qLaw','qAsk','qExpr','answer','submitBtn','inputHint','hintBtn','feedback','fbHead','fbBody','fbDiag','stepsBtn','steps','stepsList','nextRow','nextBtn','stAnswered','stAccuracy','stStreak','stMastery','levelName','ringFill','ringPct','mapGrid','learnAcc','toast','toastTitle','toastBody','footNote','greet','streakChip','streakN','dailyBox','dgCount','dgGoal','dgFill','nameInput','setName','themeSeg','swatches','goalSeg','backdrop','settingsBtn','closeSettings','resetBtn','pad','skipBtn','learnLinkBtn'].forEach(k=>els[k]=$(k));
 
 let toastTimer;
 function showToast(title,body){els.toastTitle.textContent=title;els.toastBody.innerHTML=body;els.toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>els.toast.classList.remove('show'),4200);}
@@ -887,10 +966,8 @@ function updateStats(){
   const m=overallMastery();els.stMastery.textContent=m+'%';
   els.ringFill.style.strokeDashoffset=106.8*(1-m/100);els.ringPct.textContent=m+'%';
   els.levelName.textContent=levelName(m);
-  // day streak chip
   const ds=displayDayStreak();
   els.streakChip.style.display=ds>0?'':'none';els.streakN.textContent=ds;
-  // daily goal
   const goal=state.profile.dailyGoal,c=(state.day.date===todayStr()?state.day.count:0);
   els.dgCount.textContent=c;els.dgGoal.textContent=goal;
   els.dgFill.style.width=Math.min(100,Math.round(c/goal*100))+'%';
@@ -912,7 +989,7 @@ function renderMap(){
     const pctTxt=locked?'🔒':(m==null?'—':m+'%');
     const acc=locked?'unlocks at 40% avg':(s.attempts?Math.round(s.correct/s.attempts*100)+'% correct':'not started');
     const focus=(s.attempts>0&&id===wk&&!locked);
-    const pips=[1,2,3].map(d=>`<i class="${d<=s.difficulty?'on':''}"></i>`).join('');
+    const pips=[1,2,3,4,5].map(d=>`<i class="${d<=s.difficulty?'on':''}"></i>`).join('');
     return `<div class="mcard ${focus?'focus':''} ${locked?'locked':''}">
       <div class="mtop"><div><div class="mname">${L.name}</div><div class="mrule">${L.rule}</div></div>
       ${focus?'<span class="tag weak">Focus</span>':''}${locked?'<span class="tag review">Locked</span>':''}</div>
