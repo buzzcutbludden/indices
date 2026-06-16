@@ -158,6 +158,9 @@
   .stat .v{font-family:"Space Grotesk";font-weight:600;font-size:1.5rem;line-height:1}
   .stat .k{font-size:.7rem;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
   .stat .v.flame{color:var(--amber)}
+  .export-row{display:flex;justify-content:flex-end;margin-top:12px}
+  .export-row button{display:inline-flex;align-items:center;gap:6px}
+  .export-row button svg{flex-shrink:0}
   .section-h{font-family:"Space Grotesk";font-weight:600;font-size:1.18rem;margin:4px 0 4px}
   .section-sub{color:var(--muted);font-size:.9rem;margin-bottom:18px}
   .map{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
@@ -345,6 +348,12 @@
         <div class="stat"><div class="v flame" id="stStreak">0</div><div class="k">Hot run</div></div>
         <div class="stat"><div class="v" id="stMastery">0%</div><div class="k">Mastery</div></div>
       </div>
+      <div class="export-row">
+        <button class="btn btn-ghost" id="exportBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export history
+        </button>
+      </div>
     </div>
   </section>
 
@@ -421,6 +430,7 @@ const pick=a=>a[Math.floor(Math.random()*a.length)];
 function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a||1}
 function fracStr(n,d){const g=gcd(n,d);n/=g;d/=g;if(d===1)return `${n}`;return `${n}/${d}`;}
 function Q(o){o.traps=(o.traps||[]).filter(t=>Math.abs(t.v-o.answer)>1e-6);return o;}
+function stripHtml(h){const d=document.createElement('div');d.innerHTML=h;return d.textContent||'';}
 
 /* ===== law metadata ===== */
 const LAWS={
@@ -719,10 +729,14 @@ const ACCENTS={
 
 /* ===== state + persistence ===== */
 const STORE_KEY='powerup-indices-v3';
+const DEDUP_SIZE=50;
+const MAX_HISTORY=2000;
 const state={
   laws:{}, totalAnswered:0, totalCorrect:0, streak:0, sinceSeen:{}, reviewQueue:[], started:false,
   profile:{name:'', theme:'light', accent:'indigo', dailyGoal:20},
-  day:{date:'', count:0}, dayStreak:{count:0, lastDate:''}
+  day:{date:'', count:0}, dayStreak:{count:0, lastDate:''},
+  questionHistory:[],
+  recentExprs:[]
 };
 function freshLaws(){
   LAW_IDS.forEach(id=>{state.laws[id]={mastery:null,attempts:0,correct:0,difficulty:1,streak:0};state.sinceSeen[id]=99;});
@@ -730,13 +744,19 @@ function freshLaws(){
 function freshProgress(){
   state.totalAnswered=0;state.totalCorrect=0;state.streak=0;state.reviewQueue=[];state.started=false;
   state.day={date:'',count:0};state.dayStreak={count:0,lastDate:''};
+  state.questionHistory=[];state.recentExprs=[];
   freshLaws();
 }
 freshProgress();
 
 function persistable(){return{v:3,laws:state.laws,totalAnswered:state.totalAnswered,totalCorrect:state.totalCorrect,
-  profile:state.profile,day:state.day,dayStreak:state.dayStreak};}
-function saveState(){try{localStorage.setItem(STORE_KEY,JSON.stringify(persistable()));}catch(e){}}
+  profile:state.profile,day:state.day,dayStreak:state.dayStreak,questionHistory:state.questionHistory};}
+function saveState(){try{localStorage.setItem(STORE_KEY,JSON.stringify(persistable()));}catch(e){
+  if(e.name==='QuotaExceededError'&&state.questionHistory.length>200){
+    state.questionHistory=state.questionHistory.slice(-200);
+    try{localStorage.setItem(STORE_KEY,JSON.stringify(persistable()));}catch(e2){}
+  }
+}}
 function loadState(){
   let raw=null;try{raw=localStorage.getItem(STORE_KEY);}catch(e){return false;}
   if(!raw){return migrateV2();}
@@ -745,6 +765,8 @@ function loadState(){
     state.totalAnswered=s.totalAnswered||0;state.totalCorrect=s.totalCorrect||0;
     if(s.profile)state.profile=Object.assign(state.profile,s.profile);
     if(s.day)state.day=s.day; if(s.dayStreak)state.dayStreak=s.dayStreak;
+    if(Array.isArray(s.questionHistory))state.questionHistory=s.questionHistory.slice(-MAX_HISTORY);
+    state.recentExprs=state.questionHistory.slice(-DEDUP_SIZE).map(h=>h.exprKey||'');
     LAW_IDS.forEach(id=>state.sinceSeen[id]=99);
     return state.totalAnswered>0;
   }catch(e){return false;}
@@ -801,6 +823,19 @@ function chooseLaw(){
 }
 
 let forcedLaw=null,current=null,combinedUnlockedBefore=false;
+
+/* ===== deduplication ===== */
+function exprKey(html){
+  return html.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+}
+function isDuplicate(key){
+  return state.recentExprs.includes(key);
+}
+function trackExpr(key){
+  state.recentExprs.push(key);
+  if(state.recentExprs.length>DEDUP_SIZE)state.recentExprs.shift();
+}
+
 function buildQuestion(){
   let id,redo=false,forcedDiff;
   const dueIx=state.reviewQueue.findIndex(q=>q.dueAt<=state.totalAnswered);
@@ -808,10 +843,37 @@ function buildQuestion(){
   else if(dueIx>=0){const item=state.reviewQueue.splice(dueIx,1)[0];id=item.lawId;redo=true;forcedDiff=item.difficulty;}
   else id=chooseLaw();
   const d=(forcedDiff!==undefined)?forcedDiff:state.laws[id].difficulty;
-  const q=GEN[id](d);q.lawId=id;q.difficulty=d;q.redo=redo;current=q;
+
+  /* Generate with dedup — retry up to 15 times */
+  let q, key, attempts=0;
+  do {
+    q=GEN[id](d);
+    key=exprKey(q.expr);
+    attempts++;
+  } while(isDuplicate(key) && attempts<15);
+  trackExpr(key);
+
+  q.lawId=id;q.difficulty=d;q.redo=redo;q.exprKey=key;current=q;
   LAW_IDS.forEach(k=>state.sinceSeen[k]++);state.sinceSeen[id]=0;
   return q;
 }
+
+/* ===== history recording ===== */
+function recordHistory(result, userAnswer){
+  const entry={
+    ts: new Date().toISOString(),
+    law: current.lawId,
+    lawName: LAWS[current.lawId].name,
+    difficulty: current.difficulty,
+    exprKey: current.exprKey,
+    answer: current.answerDisplay,
+    userAnswer: userAnswer!=null ? String(userAnswer) : '',
+    result: result
+  };
+  state.questionHistory.push(entry);
+  if(state.questionHistory.length>MAX_HISTORY)state.questionHistory=state.questionHistory.slice(-MAX_HISTORY);
+}
+
 function gradeAnswer(correct){
   touchActivity();
   const L=state.laws[current.lawId];
@@ -847,7 +909,7 @@ function parseNum(raw){
 /* ===== DOM ===== */
 const $=s=>document.getElementById(s);
 const els={};
-['startScreen','practiceArea','focusName','focusTag','qLaw','qAsk','qExpr','answer','submitBtn','inputHint','hintBtn','feedback','fbHead','fbBody','fbDiag','stepsBtn','steps','stepsList','nextRow','nextBtn','stAnswered','stAccuracy','stStreak','stMastery','levelName','ringFill','ringPct','mapGrid','learnAcc','toast','toastTitle','toastBody','footNote','greet','streakChip','streakN','dailyBox','dgCount','dgGoal','dgFill','nameInput','setName','themeSeg','swatches','goalSeg','backdrop','settingsBtn','closeSettings','resetBtn','pad','skipBtn','learnLinkBtn'].forEach(k=>els[k]=$(k));
+['startScreen','practiceArea','focusName','focusTag','qLaw','qAsk','qExpr','answer','submitBtn','inputHint','hintBtn','feedback','fbHead','fbBody','fbDiag','stepsBtn','steps','stepsList','nextRow','nextBtn','stAnswered','stAccuracy','stStreak','stMastery','levelName','ringFill','ringPct','mapGrid','learnAcc','toast','toastTitle','toastBody','footNote','greet','streakChip','streakN','dailyBox','dgCount','dgGoal','dgFill','nameInput','setName','themeSeg','swatches','goalSeg','backdrop','settingsBtn','closeSettings','resetBtn','pad','skipBtn','learnLinkBtn','exportBtn'].forEach(k=>els[k]=$(k));
 
 let toastTimer;
 function showToast(title,body){els.toastTitle.textContent=title;els.toastBody.innerHTML=body;els.toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>els.toast.classList.remove('show'),4200);}
@@ -934,6 +996,7 @@ function showFeedback(correct,userVal){
 function skip(){
   if(els.answer.disabled)return;
   gradeSkip();
+  recordHistory('skip', '');
   els.answer.disabled=true;setAnswering(false);
   els.feedback.classList.add('show','info');
   els.fbHead.textContent='Here\u2019s how it works';
@@ -956,6 +1019,7 @@ function submit(){
   const val=parseNum(els.answer.value);
   if(isNaN(val)){els.answer.classList.add('no');setTimeout(()=>els.answer.classList.remove('no'),350);els.inputHint.textContent='Type a number or a fraction like 1/9';return;}
   const correct=Math.abs(val-current.answer)<1e-6;
+  recordHistory(correct?'correct':'wrong', els.answer.value.trim());
   gradeAnswer(correct);state.started=true;
   showFeedback(correct,val);
 }
@@ -972,6 +1036,23 @@ function updateStats(){
   els.dgCount.textContent=c;els.dgGoal.textContent=goal;
   els.dgFill.style.width=Math.min(100,Math.round(c/goal*100))+'%';
   els.dailyBox.classList.toggle('done',c>=goal&&goal>0);
+}
+
+/* ===== export history ===== */
+function exportHistory(){
+  if(!state.questionHistory.length){showToast('Nothing to export','Answer some questions first and the history will appear here.');return;}
+  const rows=[['Timestamp','Law','Difficulty','Question','Correct Answer','Your Answer','Result']];
+  state.questionHistory.forEach(h=>{
+    rows.push([h.ts, h.lawName||h.law, h.difficulty, '"'+h.exprKey.replace(/"/g,'""')+'"', h.answer, h.userAnswer, h.result]);
+  });
+  const csv=rows.map(r=>r.join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='powerup-history-'+todayStr()+'.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Exported',`${state.questionHistory.length} questions saved as CSV.`);
 }
 
 /* ===== progress map ===== */
@@ -1051,6 +1132,7 @@ els.hintBtn.addEventListener('click',()=>{
   if(stage===0){els.inputHint.innerHTML='Rule: '+L.rule;els.hintBtn.textContent='Another hint';els.hintBtn.dataset.stage='1';}
   else{els.inputHint.innerHTML='Tip: '+current.steps[0];els.hintBtn.textContent='Hint shown';els.hintBtn.disabled=true;}
 });
+els.exportBtn.addEventListener('click',exportHistory);
 
 /* ===== settings ===== */
 function buildSwatches(){
